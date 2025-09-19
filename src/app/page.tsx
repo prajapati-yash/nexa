@@ -1,4 +1,5 @@
 import Homepage from "@/Components/Homepage/Homepage";
+import HowItWorks from "@/Components/Homepage/HowItWorks";
 import ValueProposition from "@/Components/Homepage/ValueProposition";
 
 export default function Home() {
@@ -6,6 +7,7 @@ export default function Home() {
     <>
       <Homepage />
       <ValueProposition/>
+      <HowItWorks/>
     </>
   );
 }
