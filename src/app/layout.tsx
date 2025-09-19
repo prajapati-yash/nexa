@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins, Space_Grotesk, Quicksand  } from "next/font/google";
 import "./globals.css";
-
+import { Providers } from "@/lib/Providers";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -35,7 +35,9 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} ${poppins.variable} ${quicksand.variable} antialiased`}
       >
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

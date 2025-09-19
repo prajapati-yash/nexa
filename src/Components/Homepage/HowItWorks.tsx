@@ -66,7 +66,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-20 bg-white relative overflow-hidden">
+    <section id="how-it-works" className="py-20 bg-white relative overflow-hidden">
       {/* Sky blue dots at bottom */}
       <div className="absolute bottom-0 left-0 right-0 h-[20vh] pointer-events-none z-0">
         <div className="relative w-full h-full">
