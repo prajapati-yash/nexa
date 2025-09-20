@@ -890,7 +890,7 @@ const IndividualAssets = () => {
                                   className={`w-full font-bold py-2 px-4 rounded-xl transition-all duration-300 transform font-poppins text-sm ${
                                     isClaiming 
                                       ? 'bg-gray-400 cursor-not-allowed' 
-                                      : 'bg-gradient-to-r from-green-500 to-emerald-400 hover:from-green-500/90 hover:to-emerald-400/90 hover:scale-105 hover:shadow-xl hover:shadow-green-500/40'
+                                      : 'bg-gradient-to-r from-green-500 to-emerald-400 hover:from-green-500/90 hover:to-emerald-400/90 hover:shadow-lg cursor-pointer hover:shadow-green-500/40'
                                   } text-white`}
                                 >
                                   {isClaiming ? 'Claiming...' : 'Claim Your Tokens'}
@@ -945,7 +945,7 @@ const IndividualAssets = () => {
                       )}
                       
                       {asset?.funded && (
-                        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <div className="my-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                           <div className="flex items-center">
                             <div className="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
                             <span className="text-red-700 font-medium text-sm font-poppins">
@@ -1016,7 +1016,7 @@ const IndividualAssets = () => {
                   {/* Investment Button */}
                   <div className="mt-8">
                     {asset?.id.startsWith('business-') && asset?.funded ? (
-                      <div className="w-full bg-gray-100 text-gray-500 font-bold py-4 px-8 rounded-2xl text-center font-poppins uppercase tracking-wide">
+                      <div className="w-full bg-gray-100 text-gray-500 font-bold py-4 px-8 rounded-2xl text-center font-poppins uppercase tracking-wide cursor-not-allowed">
                         Business Fully Funded
                       </div>
                     ) : (
