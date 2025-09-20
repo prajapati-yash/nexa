@@ -2,10 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiUsers, FiDollarSign, FiTruck, FiCreditCard, FiTrendingUp } from "react-icons/fi";
-import step1 from "@/app/assets/step1.jpg";
-import step2 from "@/app/assets/step2.jpg";
-import step3 from "@/app/assets/step3.jpg";
-import step4 from "@/app/assets/step4.jpg";
+import step1 from "@/app/assets/connectwallet.png";
+import step2 from "@/app/assets/selectassets.png";
+import step3 from "@/app/assets/commitfunds.png";
+import step4 from "@/app/assets/recieveyields.png";
 import { LuWorkflow } from "react-icons/lu";
 import Image from "next/image";
 import { RiWalletLine } from "react-icons/ri";
