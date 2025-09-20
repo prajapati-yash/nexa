@@ -1,7 +1,6 @@
 "use client";
 import React from "react";
 import { motion, Variants } from "framer-motion";
-import { FiDollarSign, FiShield, FiTrendingUp } from "react-icons/fi";
 import { HiSparkles } from "react-icons/hi2";
 import { RiCoinLine } from "react-icons/ri";
 import { FaGem } from "react-icons/fa";
@@ -9,24 +8,24 @@ import { FaGem } from "react-icons/fa";
 const ValueProposition = () => {
   const valueProps = [
     {
-      icon: FiDollarSign,
-      title: "Accessible",
+      icon: RiCoinLine,
+      title: "Stable Yield",
       description:
-        "Invest affordably in local businesses like Car washing machines or laundromats with fractional ownership.",
+        "Harness predictable returns from real-world businesses, escaping crypto market volatility.",
       iconColor: "text-[#28aeec]",
       delay: 0.2,
     },
     {
-      icon: FiShield,
-      title: "Secure",
-      description: "Equipment-backed—no cash to operators, ensuring trust.",
+      icon: FaGem,
+      title: "Transparent Automation",
+      description: "Secure and transparent revenue distribution through smart contracts and on-chain oracles.",
       iconColor: "text-[#28aeec]",
       delay: 0.4,
     },
     {
-      icon: FiTrendingUp,
-      title: "Profitable",
-      description: "Earn 15-25% yields from stable, recession-proof ventures.",
+      icon: HiSparkles,
+      title: "Real-World Assets",
+      description: "Gain access to a new asset class of tokenized, real-world business revenue streams.",
       iconColor: "text-[#28aeec]",
       delay: 0.6,
     },
