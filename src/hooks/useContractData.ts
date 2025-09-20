@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { contractService, Business } from '@/services/contractService';
+import { useAccount, useWalletClient } from 'wagmi';
 import { Asset } from '@/Utils/AssetsData';
 
 // Custom hook for managing contract data
@@ -109,55 +110,41 @@ export const useContractData = () => {
   };
 };
 
-// Hook for wallet connection and transactions
+// Hook for wallet connection and transactions (using wagmi)
 export const useWallet = () => {
-  const [account, setAccount] = useState<string | null>(null);
-  const [provider, setProvider] = useState<any>(null);
-  const [signer, setSigner] = useState<any>(null);
-  const [connected, setConnected] = useState(false);
+  const { address, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
 
-  const connectWallet = async () => {
+  // Create ethers signer from walletClient
+  const getEthersSigner = async () => {
+    if (!walletClient || !isConnected) return null;
+    
     try {
       if (typeof window !== 'undefined' && window.ethereum) {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
         const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        
-        setAccount(accounts[0]);
-        setProvider(provider);
-        setSigner(signer);
-        setConnected(true);
-        
-        return { account: accounts[0], provider, signer };
-      } else {
-        throw new Error('MetaMask not found');
+        return await provider.getSigner();
       }
+      return null;
     } catch (error) {
-      console.error('Error connecting wallet:', error);
-      throw error;
+      console.error('Error creating ethers signer:', error);
+      return null;
     }
   };
 
-  const disconnectWallet = () => {
-    setAccount(null);
-    setProvider(null);
-    setSigner(null);
-    setConnected(false);
-  };
-
   return {
-    account,
-    provider,
-    signer,
-    connected,
-    connectWallet,
-    disconnectWallet
+    account: address,
+    provider: null, // Not needed with wagmi
+    signer: walletClient, // Keep walletClient for compatibility
+    getEthersSigner: getEthersSigner, // Function to get ethers signer
+    connected: isConnected,
+    connectWallet: () => {}, // Handled by Privy
+    disconnectWallet: () => {} // Handled by Privy
   };
 };
 
 // Hook for business interactions
 export const useBusinessActions = () => {
-  const { signer, connected } = useWallet();
+  const { signer, connected, getEthersSigner } = useWallet();
 
   const investInBusiness = async (businessId: number, amount: string) => {
     if (!connected || !signer) {
@@ -165,7 +152,12 @@ export const useBusinessActions = () => {
     }
     
     try {
-      const txHash = await contractService.investInBusiness(businessId, amount, signer);
+      const ethersSigner = await getEthersSigner();
+      if (!ethersSigner) {
+        throw new Error('Failed to get ethers signer');
+      }
+      
+      const txHash = await contractService.investInBusiness(businessId, amount, ethersSigner);
       return txHash;
     } catch (error) {
       console.error('Error investing in business:', error);
@@ -179,7 +171,12 @@ export const useBusinessActions = () => {
     }
     
     try {
-      const txHash = await contractService.claimTokens(businessId, signer);
+      const ethersSigner = await getEthersSigner();
+      if (!ethersSigner) {
+        throw new Error('Failed to get ethers signer');
+      }
+      
+      const txHash = await contractService.claimTokens(businessId, ethersSigner);
       return txHash;
     } catch (error) {
       console.error('Error claiming tokens:', error);
@@ -193,10 +190,75 @@ export const useBusinessActions = () => {
     }
     
     try {
-      const txHash = await contractService.depositYield(businessId, amount, signer);
+      const ethersSigner = await getEthersSigner();
+      if (!ethersSigner) {
+        throw new Error('Failed to get ethers signer');
+      }
+      
+      const txHash = await contractService.depositYield(businessId, amount, ethersSigner);
       return txHash;
     } catch (error) {
       console.error('Error depositing yield:', error);
+      throw error;
+    }
+  };
+
+  const uploadReceiptAndDistributeYield = async (
+    businessId: number, 
+    amount: string, 
+    receiptHash: string, 
+    description: string
+  ) => {
+    if (!connected || !signer) {
+      throw new Error('Wallet not connected');
+    }
+    
+    try {
+      const ethersSigner = await getEthersSigner();
+      if (!ethersSigner) {
+        throw new Error('Failed to get ethers signer');
+      }
+      
+      const txHash = await contractService.uploadReceiptAndDistributeYield(
+        businessId, 
+        amount, 
+        receiptHash, 
+        description, 
+        ethersSigner
+      );
+      return txHash;
+    } catch (error) {
+      console.error('Error uploading receipt and distributing yield:', error);
+      throw error;
+    }
+  };
+
+  const getBusinessReceipts = async (businessId: number) => {
+    try {
+      const receipts = await contractService.getBusinessReceipts(businessId);
+      return receipts;
+    } catch (error) {
+      console.error('Error fetching business receipts:', error);
+      throw error;
+    }
+  };
+
+  const getBusinessById = async (businessId: number) => {
+    try {
+      const business = await contractService.getBusinessById(businessId);
+      return business;
+    } catch (error) {
+      console.error('Error fetching business:', error);
+      throw error;
+    }
+  };
+
+  const calculateDistribution = async (totalAmount: string) => {
+    try {
+      const distribution = await contractService.calculateDistribution(totalAmount);
+      return distribution;
+    } catch (error) {
+      console.error('Error calculating distribution:', error);
       throw error;
     }
   };
@@ -207,7 +269,12 @@ export const useBusinessActions = () => {
     }
     
     try {
-      const txHash = await contractService.claimYield(businessId, signer);
+      const ethersSigner = await getEthersSigner();
+      if (!ethersSigner) {
+        throw new Error('Failed to get ethers signer');
+      }
+      
+      const txHash = await contractService.claimYield(businessId, ethersSigner);
       return txHash;
     } catch (error) {
       console.error('Error claiming yield:', error);
@@ -234,6 +301,11 @@ export const useBusinessActions = () => {
     }
     
     try {
+      const ethersSigner = await getEthersSigner();
+      if (!ethersSigner) {
+        throw new Error('Failed to get ethers signer');
+      }
+      
       const txHash = await contractService.submitBusiness(
         name, 
         fundingGoal, 
@@ -247,7 +319,7 @@ export const useBusinessActions = () => {
         certificate,
         yieldRange,
         ownerContract,
-        signer
+        ethersSigner
       );
       return txHash;
     } catch (error) {
@@ -260,6 +332,10 @@ export const useBusinessActions = () => {
     investInBusiness,
     claimTokens,
     depositYield,
+    uploadReceiptAndDistributeYield,
+    getBusinessReceipts,
+    getBusinessById,
+    calculateDistribution,
     claimYield,
     submitBusiness
   };

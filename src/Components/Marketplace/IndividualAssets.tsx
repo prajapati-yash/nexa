@@ -25,6 +25,7 @@ import {
 import { BsLightning, BsCopy, BsCoin } from "react-icons/bs";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import { FaCoins } from "react-icons/fa6";
+import { ReceiptUploadModal, ReceiptDashboard } from '@/Components/ReceiptUpload';
 
 const IndividualAssets = () => {
     const params = useParams();
@@ -46,6 +47,12 @@ const IndividualAssets = () => {
   const [canClaimTokens, setCanClaimTokens] = useState(false);
   const [tokensMinted, setTokensMinted] = useState(false);
   const [scrollY, setScrollY] = useState(0);
+  const [isBusinessOwner, setIsBusinessOwner] = useState(false);
+
+  // Extract business ID from asset ID (format: "business-0", "business-1", etc.)
+  const businessId = asset?.id.startsWith('business-') 
+    ? parseInt(asset.id.replace('business-', '')) 
+    : null;
 
   // Debug logging
   console.log('IndividualAssets render:', {
@@ -53,7 +60,8 @@ const IndividualAssets = () => {
     blockchainLoading,
     blockchainAssetsLength: blockchainAssets.length,
     assetsDataLength: assetsData.length,
-    asset: asset?.title || 'null'
+    asset: asset?.title || 'null',
+    businessId
   });
 
   useEffect(() => {
@@ -109,7 +117,7 @@ const IndividualAssets = () => {
       if (!asset || !address || !asset.id.startsWith('business-')) return;
       
       try {
-        const businessId = parseInt(asset.id.replace('business-', ''));
+        if (!businessId) return;
         
         // Check if tokens are minted
         const minted = await contractService.areTokensMinted(businessId);
@@ -127,12 +135,18 @@ const IndividualAssets = () => {
         const canClaim = await contractService.canClaimTokens(businessId, address!);
         setCanClaimTokens(canClaim);
         
+        // Check if user is business owner
+        const business = await contractService.getBusinessById(businessId);
+        const isOwner = business?.owner.toLowerCase() === address!.toLowerCase();
+        setIsBusinessOwner(isOwner || false);
+        
         console.log('User status:', {
           businessId,
           contribution,
           tokenBalance,
           canClaim,
-          minted
+          minted,
+          isOwner
         });
         
         // Debug claim button visibility
@@ -200,12 +214,7 @@ const IndividualAssets = () => {
         throw new Error('No wallet available');
       }
 
-      // Extract business ID from asset ID
-      const businessId = asset.id.startsWith('business-') 
-        ? parseInt(asset.id.replace('business-', '')) 
-        : null;
-
-      if (businessId === null) {
+      if (!businessId) {
         throw new Error('Invalid business ID');
       }
 
@@ -276,12 +285,7 @@ const IndividualAssets = () => {
         throw new Error('No wallet available');
       }
 
-      // Extract business ID from asset ID (format: "business-0", "business-1", etc.)
-      const businessId = asset.id.startsWith('business-') 
-        ? parseInt(asset.id.replace('business-', '')) 
-        : null;
-
-      if (businessId === null) {
+      if (!businessId) {
         throw new Error('Invalid business ID');
       }
       
@@ -932,6 +936,32 @@ const IndividualAssets = () => {
                               {claimStatus}
                             </div>
                           )}
+                        </div>
+                      )}
+                      
+                      {/* Receipt Management Section - Only for Business Owners */}
+                      {isBusinessOwner && businessId !== null && (
+                        <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                          <h5 className="font-semibold text-purple-900 mb-3">Receipt Management</h5>
+                          <p className="text-sm text-purple-700 mb-3">
+                            Upload receipts to distribute yield automatically. 55% goes to you, 5% to platform, 40% to token holders.
+                          </p>
+                          <div className="flex gap-2 flex-wrap">
+                            <button
+                              onClick={() => router.push(`/receipt-upload?businessId=${businessId}`)}
+                              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                              </svg>
+                              Upload Receipt
+                            </button>
+                            <ReceiptDashboard 
+                              businessId={businessId!}
+                              businessName={asset?.title || 'Business'}
+                              isOwner={isBusinessOwner}
+                            />
+                          </div>
                         </div>
                       )}
                       
