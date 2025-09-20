@@ -6,6 +6,7 @@ import { HiQuestionMarkCircle } from "react-icons/hi2";
 import { IoWallet, IoCopy, IoLogOut, IoChevronDown } from "react-icons/io5";
 import { useAccount, useDisconnect } from "wagmi";
 import { usePrivy } from "@privy-io/react-auth";
+import GetInTouchForm from "../Forms/GetInTouchForm";
 
 const Navbar = () => {
   const { ready, authenticated, login, logout } = usePrivy();
@@ -14,6 +15,7 @@ const Navbar = () => {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isHomePage = pathname === "/";
@@ -66,7 +68,16 @@ const Navbar = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
+  const openForm = () => {
+    setIsFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setIsFormOpen(false);
+  };
+
   return (
+    <>
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled || ismarketPlace ? "bg-black/20 backdrop-blur-md" : ""
@@ -88,9 +99,9 @@ const Navbar = () => {
 
           {/* Right Side Buttons */}
           <div className="flex items-center space-x-3 font-poppins">
-            {/* How It Works Button */}
+            {/* List Your Business Button */}
             <button
-              // onClick={scrollToHowItWorks}
+              onClick={openForm}
               className="cursor-pointer group relative overflow-hidden text-white/90 hover:text-white font-medium px-5 py-2.5 rounded-full transition-all duration-500 hover:bg-gradient-to-r hover:from-white/20 hover:to-sky-400/20 backdrop-blur-sm border border-white/30  hover:shadow-lg hover:shadow-[#28aeec]/20 uppercase"
             >
               <span className="relative z-10 flex items-center gap-2.5">
@@ -224,7 +235,11 @@ const Navbar = () => {
           </div>
         </div>
       </div>
+
     </nav>
+      {/* Get In Touch Form Modal */}
+      <GetInTouchForm isOpen={isFormOpen} onClose={closeForm} />
+      </>
   );
 };
 
