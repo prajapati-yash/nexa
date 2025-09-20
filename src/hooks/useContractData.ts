@@ -23,17 +23,17 @@ export const useContractData = () => {
       // Convert businesses to assets format for UI
       const formattedAssets = contractBusinesses.map(business => ({
         id: `business-${business.id}`,
-        image: "/api/placeholder/400/300", // Placeholder image
-        mainImage: "/api/placeholder/800/600",
+        image: business.image || "/api/placeholder/400/300", // Use actual image from contract
+        mainImage: business.image || "/api/placeholder/800/600", // Use actual image from contract
         title: business.name,
-        description: business.equipmentList || "Real-world asset investment opportunity powered by blockchain",
+        description: business.description || business.equipmentList || "Real-world asset investment opportunity powered by blockchain",
         annualYield: business.annualYield || 0,
-        boringIndex: 5, // Default boring index
-        location: "Decentralized Platform",
+        boringIndex: business.boringIndexNumber || 5, // Use actual boring index from contract
+        location: business.location || "Decentralized Platform",
         usdcValue: Number(business.fundingGoal) * 3000, // Rough ETH to USD conversion
         nextPayout: { days: 30, hours: 0, minutes: 0, seconds: 0 },
         powerSaved: { amount: 0, unit: "N/A" },
-        whyThisWorks: [
+        whyThisWorks: business.whyThisWorks ? business.whyThisWorks.split('\n').filter(line => line.trim()) : [
           "Decentralized investment platform",
           "Transparent smart contract execution", 
           "Proportional token distribution",
@@ -43,20 +43,21 @@ export const useContractData = () => {
         locationOnMap: {
           lat: 0,
           lng: 0,
-          address: "Blockchain Network"
+          address: business.location || "Blockchain Network"
         },
         smartContractAddress: business.tokenAddress || "",
         funded: business.funded, // Add funded status
         proof: {
-          fileName: `${business.name}_Contract.pdf`,
-          url: business.tokenAddress ? `https://sepolia.arbiscan.io/address/${business.tokenAddress}` : ""
+          fileName: business.certificate ? `${business.name}_Certificate.pdf` : `${business.name}_Contract.pdf`,
+          url: business.certificate || (business.tokenAddress ? `https://sepolia.arbiscan.io/address/${business.tokenAddress}` : "")
         },
         category: "RWA Investment",
         fundingProgress: business.fundingProgress,
         minimumInvestment: business.minimumInvestment,
         totalRequired: Number(business.fundingGoal),
         investorsCount: business.investorsCount || 0,
-        status: business.status
+        status: business.status,
+        yieldRange: business.yieldRange || "8-12%"
       }));
       
       setAssets(formattedAssets);

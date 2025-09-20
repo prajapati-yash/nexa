@@ -9,6 +9,7 @@ import { useAccount } from 'wagmi';
 import { contractService } from '@/services/contractService';
 import { ethers } from 'ethers';
 import { useParams, useRouter } from "next/navigation";
+import toast, { Toaster } from 'react-hot-toast';
 import {
   FiZap,
   FiMapPin,
@@ -48,11 +49,12 @@ const IndividualAssets = () => {
   const [tokensMinted, setTokensMinted] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   const [isBusinessOwner, setIsBusinessOwner] = useState(false);
+  const [businessImage, setBusinessImage] = useState<string>('');
 
   // Extract business ID from asset ID (format: "business-0", "business-1", etc.)
-  const businessId = asset?.id.startsWith('business-') 
-    ? parseInt(asset.id.replace('business-', '')) 
-    : null;
+  const businessId = asset?.id.startsWith('business-')
+  ? parseInt(asset.id.replace('business-', ''))
+  : null;
 
   // Debug logging
   console.log('IndividualAssets render:', {
@@ -118,7 +120,6 @@ const IndividualAssets = () => {
       
       try {
         if (!businessId) return;
-        
         // Check if tokens are minted
         const minted = await contractService.areTokensMinted(businessId);
         setTokensMinted(minted);
@@ -137,8 +138,14 @@ const IndividualAssets = () => {
         
         // Check if user is business owner
         const business = await contractService.getBusinessById(businessId);
+        console.log(business,"business")
         const isOwner = business?.owner.toLowerCase() === address!.toLowerCase();
         setIsBusinessOwner(isOwner || false);
+
+        // Set business image if available
+        if (business?.image) {
+          setBusinessImage(business.image);
+        }
         
         console.log('User status:', {
           businessId,
@@ -146,7 +153,8 @@ const IndividualAssets = () => {
           tokenBalance,
           canClaim,
           minted,
-          isOwner
+          isOwner,
+          
         });
         
         // Debug claim button visibility
@@ -193,6 +201,20 @@ const IndividualAssets = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleMapClick = () => {
+    toast('🗺️ Interactive map coming soon!', {
+      duration: 3000,
+      position: 'top-center',
+      style: {
+        background: '#28aeec44',
+        color: '#fff',
+        fontWeight: '500',
+        borderRadius: '12px',
+        padding: '12px 16px',
+      },
+    });
+  };
+
   const handleClaimTokens = async () => {
     if (!asset || !address) return;
 
@@ -220,8 +242,8 @@ const IndividualAssets = () => {
 
       // Get the provider and signer from Privy wallet
       const provider = await wallet.getEthereumProvider();
-      let ethersProvider = new ethers.BrowserProvider(provider);
-      let signer = await ethersProvider.getSigner();
+      const ethersProvider = new ethers.BrowserProvider(provider);
+      const signer = await ethersProvider.getSigner();
 
       setClaimStatus('Processing token claim...');
 
@@ -646,7 +668,7 @@ const IndividualAssets = () => {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Asset Not Found</h2>
           <p className="text-gray-600 font-poppins mb-4">
-            The asset you're looking for doesn't exist in our database.
+            The asset you&apos;re looking for doesn&apos;t exist in our database.
           </p>
           <div className="space-y-2 text-sm text-gray-500">
             <p>Available assets:</p>
@@ -675,8 +697,8 @@ const IndividualAssets = () => {
         {/* Hero Section with Main Image and Title/Description Overlay */}
         <div className="relative h-[70vh] min-h-[550px] overflow-hidden">
           <Image
-            src={asset?.mainImage || ''}
-            alt={asset?.title || 'Asset Image'}
+            src={businessImage || asset?.mainImage || asset?.image || ''}
+            alt={asset?.title  || 'Asset Image'}
             fill
             className="object-cover"
             priority
@@ -973,9 +995,20 @@ const IndividualAssets = () => {
                           <FiMinus className="w-5 h-5" />
                         </button>
                         <div className="flex-1 text-center">
-                          <div className="text-xl font-bold text-gray-900">
-                            {tokenQuantity}
-                          </div>
+                          <input
+                            type="number"
+                            value={tokenQuantity}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 1;
+                              setTokenQuantity(Math.max(1, value));
+                            }}
+                            onBlur={(e) => {
+                              const value = parseInt(e.target.value) || 1;
+                              setTokenQuantity(Math.max(1, value));
+                            }}
+                            className="text-xl font-bold text-gray-900 bg-transparent border-none text-center w-full focus:outline-none focus:ring-2 focus:ring-[#28aeec]/30 rounded-lg py-1"
+                            min="1"
+                          />
                           <div className="text-sm text-gray-500 font-poppins">tokens</div>
                         </div>
                         <button
@@ -1126,7 +1159,7 @@ const IndividualAssets = () => {
 
                 <div className="space-y-5">
                   {/* Next Payout */}
-                  <div className="flex items-start justify-between">
+                  {/* <div className="flex items-start justify-between">
                     <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
                       Next Payout
                     </h4>
@@ -1136,8 +1169,8 @@ const IndividualAssets = () => {
                         <span className='text-black font-normal text-sm'>Until Next Distribution</span>
                       </div>
                     </div>
-                  </div>
-                  <div className='border  border-black/5  mb-6'/>
+                  </div> */}
+                  {/* <div className='border  border-black/5  mb-6'/> */}
 
                   {/* Performance Metrics */}
                   <div className="flex items-start justify-between">
@@ -1155,7 +1188,7 @@ const IndividualAssets = () => {
                     {/* Risk Assessment */}
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-700 font-poppins font-medium">
-                        Risk Level
+                        Boring Index
                       </span>
                       <div className="flex items-center gap-2">
                         <div className="text-sm font-semibold text-gray-900">
@@ -1173,7 +1206,7 @@ const IndividualAssets = () => {
                   <div className='border  border-black/5  mb-6'/>
 
                   {/* Investment Details */}
-                  <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
+                  {/* <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
                   Investment Info
                     </h4>
 
@@ -1194,9 +1227,9 @@ const IndividualAssets = () => {
                           Min. Investment
                         </p>
                       </div>
-                    </div>
+                    </div> */}
 
-                  <div className='border  border-black/5  mb-6'/>
+                  {/* <div className='border  border-black/5  mb-6'/> */}
 
 
 
@@ -1301,7 +1334,10 @@ const IndividualAssets = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Map placeholder */}
-                    <div className="bg-gray-100 rounded-2xl h-64 flex items-center justify-center">
+                    <div
+                      className="bg-white rounded-2xl h-64 flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors"
+                      onClick={handleMapClick}
+                    >
                       <div className="text-center text-gray-500">
                         <FiMapPin className="w-12 h-12 mx-auto mb-2" />
                         <p className="font-space-grotesk">Interactive Map</p>
@@ -1343,6 +1379,7 @@ const IndividualAssets = () => {
           </div>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };

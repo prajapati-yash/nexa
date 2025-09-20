@@ -5,8 +5,8 @@ import { ethers } from 'ethers';
 
 // Contract addresses (Arbitrum Sepolia)
 const CONTRACT_ADDRESSES = {
-  REGISTRY: "0x14ffC2e3E49b6B6101e8877141B379EC3a5D2668",
-  MINTER: "0x1889239D26E55fDD876296193a654A1E8Db6b4b9",
+  REGISTRY: "0xc2baBc4fcd0F81a7E09a53534382cD3ee292F2fF",
+  MINTER: "0x80C51589E52BC426a383839AAcAC5A62E50b4D8c",
   YIELD_DISTRIBUTOR: "0x3BFbD96CFa56c87E9EF6F6D65AEBAFbe761ce1De", // Updated with receipt functionality (no token requirement)
   USDC: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d" // USDC token address
 };

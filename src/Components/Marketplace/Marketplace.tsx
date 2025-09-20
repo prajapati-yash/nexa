@@ -8,6 +8,7 @@ import { FiTarget, FiMapPin, FiClock, FiZap, FiRefreshCw } from 'react-icons/fi'
 import { BsLightning } from 'react-icons/bs';
 import { motion } from 'framer-motion';
 import { useContractData, useWallet, useBusinessActions } from '@/hooks/useContractData';
+import SkeletonLoader from './SkeletonLoader';
 
 const Marketplace = () => {
   const router = useRouter();
@@ -58,7 +59,8 @@ const Marketplace = () => {
   };
 
   // Combine contract data with static data if needed
-  const displayAssets = showStaticData ? [...assets, ...assetsData] : assets;
+  // const displayAssets = showStaticData ? [...assets, ...assetsData] : assets;
+  const displayAssets =  [...assets];
 
   return (
     <section className="min-h-screen bg-white py-28 relative overflow-hidden">
@@ -105,7 +107,7 @@ const Marketplace = () => {
           </h2>
 
           {/* Data Source Toggle */}
-          <div className="mt-6 flex items-center gap-4">
+          {/* <div className="mt-6 flex items-center gap-4">
             <button
               onClick={() => setShowStaticData(false)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
@@ -126,7 +128,7 @@ const Marketplace = () => {
             >
               Demo Data ({assetsData.length})
             </button>
-          </div>
+          </div> */}
 
           {/* Error State */}
           {error && (
@@ -145,15 +147,7 @@ const Marketplace = () => {
         
 
         {/* Loading State */}
-        {loading && (
-          <div className="text-center py-20">
-            <div className="text-[#28aeec] mb-4">
-              <FiRefreshCw className="w-16 h-16 mx-auto animate-spin" />
-            </div>
-            <h3 className="text-2xl font-bold text-gray-600 mb-2">Loading from blockchain...</h3>
-            <p className="text-gray-500">Fetching real-time investment opportunities</p>
-          </div>
-        )}
+        {loading && <SkeletonLoader />}
 
         {/* Assets Grid - Two Column with Hover Reveal */}
         {!loading && (

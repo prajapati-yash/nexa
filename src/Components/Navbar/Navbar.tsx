@@ -80,7 +80,7 @@ const Navbar = () => {
     <>
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || ismarketPlace ? "bg-black/20 backdrop-blur-md" : ""
+        !isHomePage || isScrolled ? "bg-black/20 backdrop-blur-md" : ""
       }`}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,7 +102,7 @@ const Navbar = () => {
             {/* Register Business Button */}
             <Link
               href="/business-registration"
-              className="cursor-pointer group relative overflow-hidden text-white/90 hover:text-white font-medium px-5 py-2.5 rounded-full transition-all duration-500 hover:bg-gradient-to-r hover:from-white/20 hover:to-sky-400/20 backdrop-blur-sm border border-white/30  hover:shadow-lg hover:shadow-[#28aeec]/20 uppercase"
+              className="hidden cursor-pointer group relative overflow-hidden text-white/90 hover:text-white font-medium px-5 py-2.5 rounded-full transition-all duration-500 hover:bg-gradient-to-r hover:from-white/20 hover:to-sky-400/20 backdrop-blur-sm border border-white/30  hover:shadow-lg hover:shadow-[#28aeec]/20 uppercase"
             >
               <span className="relative z-10 flex items-center gap-2.5">
                 <HiQuestionMarkCircle className="w-5 h-5 transition-all duration-300 group-hover:rotate-12 group-hover:scale-110 " />
