@@ -746,26 +746,26 @@ const IndividualAssets = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="px-4 sm:px-6 lg:px-8 -mt-16 relative z-20"
+          className="px-4 sm:px-6 lg:px-8 -mt-10 relative z-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-8">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-2xl font-bold text-gray-900 font-space-grotesk">
+                <h3 className="text-2xl font-bold text-black font-space-grotesk">
                   Funding Progress
                 </h3>
                 <div className="text-right">
                   <div className="text-3xl font-bold text-[#28aeec]">
                     {asset.fundingProgress}%
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 font-poppins">
                     ${asset.totalRequired.toLocaleString()} target
                   </div>
                 </div>
               </div>
 
               <div className="relative">
-                <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                <div className="w-full bg-white/80 rounded-full h-4 overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${asset?.fundingProgress || 0}%` }}
@@ -775,7 +775,7 @@ const IndividualAssets = () => {
                     <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
                   </motion.div>
                 </div>
-                <div className="flex justify-between mt-2 text-sm text-gray-600">
+                <div className="flex font-poppins justify-between mt-2 text-sm text-gray-600">
                   <span>
                     $
                     {(
@@ -815,11 +815,11 @@ const IndividualAssets = () => {
         )}
 
         {/* Main Content Grid */}
-        <div className="px-4 sm:px-6 lg:px-8 py-16 relative main-content-grid">
+        <div className="px-4 sm:px-6 lg:px-8 pt-6 pb-16 relative main-content-grid">
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
               {/* Left Column - Investment Details */}
-              <div className="lg:col-span-2 space-y-8">
+              <div className="lg:col-span-2 space-y-6">
                 {/* Token Pricing Section */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}
@@ -830,7 +830,7 @@ const IndividualAssets = () => {
                 >
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-[#28aeec] to-sky-400 rounded-full flex items-center justify-center">
+                    <div className="size-10 rounded-full bg-gradient-to-r from-[#28aeec] to-sky-400 flex items-center justify-center text-white font-bold text-2xl font-poppins">
                       <FiDollarSign className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 font-space-grotesk">
@@ -839,7 +839,7 @@ const IndividualAssets = () => {
                   </div>
                     
                     {/* Wallet Status */}
-                    <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    <div className={`px-3 py-1 rounded-full text-sm font-poppins font-medium ${
                       ready && wallets.length > 0
                         ? 'bg-green-100 text-green-700' 
                         : 'bg-orange-100 text-orange-700'
@@ -852,41 +852,20 @@ const IndividualAssets = () => {
 
                   {/* Business Information */}
                   {asset?.id.startsWith('business-') && (
-                    <div className="mb-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                      <h4 className="font-semibold text-blue-900 mb-2">Blockchain Business</h4>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-blue-700 font-medium">Business ID:</span>
-                          <span className="ml-2 text-blue-900">{asset.id.replace('business-', '')}</span>
-                        </div>
-                        <div>
-                          <span className="text-blue-700 font-medium">Type:</span>
-                          <span className="ml-2 text-blue-900">Smart Contract</span>
-                        </div>
-                        <div>
-                          <span className="text-blue-700 font-medium">Funding Goal:</span>
-                          <span className="ml-2 text-blue-900">{asset?.totalRequired ? `${asset.totalRequired} USDC` : 'N/A'}</span>
-                        </div>
-                        <div>
-                          <span className="text-blue-700 font-medium">Status:</span>
-                          <span className={`ml-2 font-medium ${asset?.funded ? 'text-red-600' : 'text-green-600'}`}>
-                            {asset?.funded ? 'Funded' : 'Open for Investment'}
-                          </span>
-                        </div>
-                      </div>
+                    <>
                       
                       {/* User's Investment Status */}
                       {address && (
-                        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                          <h5 className="font-semibold text-green-900 mb-2">Your Investment Status</h5>
+                        <div className="my-4 p-3 bg-white border border-sky-200 rounded-lg">
+                          <h5 className="font-semibold text-green-900 mb-2 font-space-grotesk">Your Investment Status</h5>
                           <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                              <span className="text-green-700 font-medium">Your Contribution:</span>
-                              <span className="ml-2 text-green-900">{parseFloat(userContribution).toFixed(2)} USDC</span>
+                              <span className=" font-medium font-poppins">Your Contribution:</span>
+                              <span className="ml-2 text-[#28aeec] font-poppins">{parseFloat(userContribution).toFixed(2)} USDC</span>
                             </div>
                             <div>
-                              <span className="text-green-700 font-medium">Your Tokens:</span>
-                              <span className="ml-2 text-green-900">{parseFloat(userTokenBalance).toFixed(2)} tokens</span>
+                              <span className="text-black font-medium font-poppins">Your Tokens:</span>
+                              <span className="ml-2 text-[#28aeec] font-poppins">{parseFloat(userTokenBalance).toFixed(2)} tokens</span>
                             </div>
                           </div>
                           
@@ -939,62 +918,66 @@ const IndividualAssets = () => {
                         <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
                           <div className="flex items-center">
                             <div className="w-4 h-4 bg-red-500 rounded-full mr-2"></div>
-                            <span className="text-red-700 font-medium text-sm">
+                            <span className="text-red-700 font-medium text-sm font-poppins">
                               This business is fully funded and no longer accepting investments
                             </span>
                           </div>
                         </div>
                       )}
-                    </div>
+                    {/* </div> */}
+                    </>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="flex w-full gap-8">
                     {/* Token Selection */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <div className='flex-1'>
+                      <label className="block text-sm font-medium text-gray-700 mb-3 font-poppins">
                         Number of Tokens
                       </label>
+                      <div className='bg-gradient-to-r from-[#28aeec]/10 to-sky-400/10 rounded-2xl p-6 border border-[#28aeec]/20'>
                       <div className="flex items-center space-x-4">
                         <button
                           onClick={() => handleQuantityChange(-1)}
-                          className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                          className="size-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                         >
                           <FiMinus className="w-5 h-5" />
                         </button>
                         <div className="flex-1 text-center">
-                          <div className="text-3xl font-bold text-gray-900">
+                          <div className="text-xl font-bold text-gray-900">
                             {tokenQuantity}
                           </div>
-                          <div className="text-sm text-gray-500">tokens</div>
+                          <div className="text-sm text-gray-500 font-poppins">tokens</div>
                         </div>
                         <button
                           onClick={() => handleQuantityChange(1)}
-                          className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+                          className="size-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
                         >
                           <FiPlus className="w-5 h-5" />
                         </button>
                       </div>
+                     
                       <div className="mt-4 text-center">
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-gray-600 font-poppins">
                           Price per token
                         </div>
                         <div className="text-xl font-bold text-[#28aeec]">
                           ${asset.minimumInvestment} USDC
                         </div>
                       </div>
+                      </div>
                     </div>
 
                     {/* Total Value */}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <div className='flex-1'>
+                      <label className="block text-sm font-medium text-gray-700 mb-3 font-poppins">
                         Total Investment
                       </label>
-                      <div className="bg-gradient-to-r from-[#28aeec]/10 to-sky-400/10 rounded-2xl p-6 border border-[#28aeec]/20">
+                      <div className="bg-gradient-to-r from-[#28aeec]/10 to-sky-400/10 rounded-2xl py-11 p-6 border border-[#28aeec]/20">
                         <div className="text-center">
                           <div className="text-4xl font-bold text-[#28aeec] mb-2">
                             ${totalValue.toLocaleString()}
                           </div>
-                          <div className="text-sm text-gray-600">USDC</div>
+                          <div className="text-sm text-gray-600 font-poppins">USDC</div>
                         </div>
                       </div>
                     </div>
@@ -1010,7 +993,7 @@ const IndividualAssets = () => {
                       <button 
                         onClick={handleInvestClick}
                         disabled={isInvesting}
-                        className={`w-full font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform font-poppins uppercase tracking-wide ${
+                        className={`w-full cursor-pointer font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform font-poppins uppercase tracking-wide ${
                           isInvesting 
                             ? 'bg-gray-400 cursor-not-allowed' 
                             : 'bg-gradient-to-r from-[#28aeec] to-sky-400 hover:from-[#28aeec]/90 hover:to-sky-400/90 hover:scale-105 hover:shadow-xl hover:shadow-[#28aeec]/40'
@@ -1043,16 +1026,22 @@ const IndividualAssets = () => {
                   transition={{ duration: 0.6 }}
                   className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-8"
                 >
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-gradient-to-r from-[#28aeec] to-sky-400 rounded-full flex items-center justify-center">
+                  {/* Header */}
+                  <div className="flex items-center gap-3 pb-6 border-b border-gray-200">
+                    <div className="size-10 rounded-full bg-gradient-to-r from-[#28aeec] to-sky-400 flex items-center justify-center text-white font-bold text-2xl font-poppins">
                       <FiTarget className="w-5 h-5 text-white" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 font-space-grotesk">
-                      Why This Works
-                    </h3>
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 font-space-grotesk">
+                        Why This Works
+                      </h3>
+                      <p className="text-xs text-gray-600 font-poppins">
+                        Key advantages and benefits
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="space-y-4">
+                  <div className="space-y-0 pt-2">
                     {(asset?.whyThisWorks || []).map((point: string, index: number) => (
                       <motion.div
                         key={index}
@@ -1060,29 +1049,219 @@ const IndividualAssets = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.4, delay: index * 0.1 }}
-                        className="flex items-start gap-3"
+                        className="pb-2"
                       >
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <IoCheckmarkCircle className="w-4 h-4 text-white" />
+                        <div className="flex items-center gap-3">
+                          <div className=" bg-[#28aeec] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <IoCheckmarkCircle className="w-4 h-4 text-white" />
+                          </div>
+                          <p className="text-gray-700 font-poppins leading-relaxed">
+                            {point}
+                          </p>
                         </div>
-                        <p className="text-gray-700 font-poppins leading-relaxed">
-                          {point}
-                        </p>
+                        {index < (asset?.whyThisWorks || []).length - 1 && (
+                          <div className="border-t border-gray-100 mt-3"></div>
+                        )}
                       </motion.div>
                     ))}
                   </div>
                 </motion.div>
 
-                {/* Location Section */}
-                <motion.div
+                
+              </div>
+
+              {/* Right Column - Unified Asset Information */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="bg-black/5 rounded-3xl border border-gray-200 shadow-lg p-8 h-fit sticky top-8"
+              >
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-2 pb-4 border-b border-gray-100">
+                  <div className="size-10 rounded-full bg-gradient-to-r from-[#28aeec] to-sky-400 flex items-center justify-center text-white font-bold text-2xl font-poppins">
+                    <FiTrendingUp className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 font-space-grotesk">
+                      Asset Overview
+                    </h3>
+                    <p className="text-xs text-gray-600 font-poppins">
+                      Key metrics and information
+                    </p>
+                  </div>
+                </div>
+                <div className='border  border-black/5  mb-6'/>
+
+                <div className="space-y-5">
+                  {/* Next Payout */}
+                  <div className="flex items-start justify-between">
+                    <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
+                      Next Payout
+                    </h4>
+                    <div className="text-right">
+                      <div className="flex flex-col text-xl font-bold text-[#28aeec]">
+                        {asset?.nextPayout ? formatNextPayout(asset.nextPayout) : '30d 0h 0m 0s'}
+                        <span className='text-black font-normal text-sm'>Until Next Distribution</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='border  border-black/5  mb-6'/>
+
+                  {/* Performance Metrics */}
+                  <div className="flex items-start justify-between">
+                    <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
+                      Performance
+                    </h4>
+                    <div className="text-right">
+                      <div className="flex flex-col text-xl font-bold text-[#28aeec]">
+                      {asset.annualYield}%
+                        <span className='text-black font-normal text-sm'>Annual Yield</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-xl p-4">
+                    {/* Risk Assessment */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-700 font-poppins font-medium">
+                        Risk Level
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm font-semibold text-gray-900">
+                          {asset?.boringIndex || 5}/10
+                        </div>
+                        <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                          <div
+                            className="bg-gradient-to-r from-emerald-500 to-yellow-500 h-1.5 rounded-full"
+                            style={{ width: `${(asset.boringIndex / 10) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='border  border-black/5  mb-6'/>
+
+                  {/* Investment Details */}
+                  <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
+                  Investment Info
+                    </h4>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-white rounded-lg p-3 text-center">
+                        <div className="text-xl font-bold text-gray-900 mb-1">
+                          {asset.investorsCount}
+                        </div>
+                        <p className="text-sm text-gray-600 font-poppins">
+                          Investors
+                        </p>
+                      </div>
+                      <div className="bg-white rounded-lg p-3 text-center">
+                        <div className="text-xl font-bold text-[#28aeec] mb-1">
+                          ${asset.minimumInvestment}
+                        </div>
+                        <p className="text-sm text-gray-600 font-poppins">
+                          Min. Investment
+                        </p>
+                      </div>
+                    </div>
+
+                  <div className='border  border-black/5  mb-6'/>
+
+
+
+ {/* Technical */}
+ <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
+                  Blockchain
+                    </h4>
+                    {asset?.smartContractAddress ? (
+                      <>
+                    <div className="flex items-center justify-between bg-white p-4 rounded-xl">
+                      <span className="text-sm text-gray-700 font-poppins font-medium">
+                        Contract Address
+                      </span>
+                      <div className="flex items-center">
+                      <code className="text-xs bg-gray-50 px-2 py-1.5 rounded-md flex-1 overflow-hidden font-mono">
+                            {`${asset.smartContractAddress.slice(0, 6)}...${asset.smartContractAddress.slice(-4)}`}
+                          </code>
+                      <button
+                            onClick={() => copyAddress(asset.smartContractAddress)}
+                            className={`p-1.5 cursor-pointer hover:bg-gray-50 rounded-md transition-colors group ${copied? "text-[#28aeec]": "text-gray-400"}`}
+                            title="Copy address"
+                          >
+                            <BsCopy className="w-3 h-3 text-gray-400 group-hover:text-sky-300" />
+                          </button>
+                      </div>
+                    </div>
+                    {copied && (
+                          <div className="text-xs text-green-600 flex items-center justify-end gap-1 ml-auto mr-1">
+                            <IoCheckmarkCircle className="w-3 h-3" />
+                            <span className="font-poppins">Copied!</span>
+                          </div>
+                        )}
+                        </>
+                      ) : (
+                        <div className="bg-white rounded-lg p-4 text-center">
+                        <p className="text-sm text-gray-900 font-poppins">
+                          Traditional investment asset
+                        </p>
+                      </div>
+                      )}
+                  <div className='border  border-black/5  mb-6'/>
+
+                  {/* Documentation */}
+                  <h4 className="text-lg font-semibold text-gray-900 font-space-grotesk">
+                    Documentation
+                  </h4>
+
+                  {asset?.proof?.url ? (
+                    <a
+                      href={asset.proof.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between bg-white p-4 rounded-xl hover:shadow-sm transition-all duration-300 group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-rose-100 rounded-lg flex items-center justify-center group-hover:bg-rose-200 transition-colors">
+                          <FiFileText className="w-4 h-4 text-rose-600" />
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-900 text-sm font-poppins group-hover:text-rose-700">
+                            {asset.proof.fileName}
+                          </div>
+                          <div className="text-xs text-gray-500 font-poppins">
+                            Business Plan
+                          </div>
+                        </div>
+                      </div>
+                      <FiArrowLeft className="w-4 h-4 text-gray-400 rotate-135 group-hover:text-rose-600 transition-colors" />
+                    </a>
+                  ) : (
+                    <div className="bg-white rounded-xl p-4 text-center">
+                      <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <FiFileText className="w-4 h-4 text-gray-400" />
+                      </div>
+                      <p className="font-medium text-gray-500 text-sm font-poppins mb-1">
+                        No documentation
+                      </p>
+                      <p className="text-xs text-gray-400 font-poppins">
+                        Coming soon
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
+             {/* Location Section */}
+             <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
-                  className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-8"
+                  className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-8 mt-6"
                 >
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-gradient-to-r from-[#28aeec] to-sky-400 rounded-full flex items-center justify-center">
+                  <div className="size-10 rounded-full bg-gradient-to-r from-[#28aeec] to-sky-400 flex items-center justify-center text-white font-bold text-2xl font-poppins">
                       <FiMapPin className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-900 font-space-grotesk">
@@ -1095,11 +1274,11 @@ const IndividualAssets = () => {
                     <div className="bg-gray-100 rounded-2xl h-64 flex items-center justify-center">
                       <div className="text-center text-gray-500">
                         <FiMapPin className="w-12 h-12 mx-auto mb-2" />
-                        <p>Interactive Map</p>
-                        <p className="text-sm">
+                        <p className="font-space-grotesk">Interactive Map</p>
+                        <p className="text-sm font-poppins">
                           Lat: {asset.locationOnMap.lat}
                         </p>
-                        <p className="text-sm">
+                        <p className="text-sm font-poppins">
                           Lng: {asset.locationOnMap.lng}
                         </p>
                       </div>
@@ -1108,7 +1287,7 @@ const IndividualAssets = () => {
                     {/* Address */}
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Address
                         </label>
                         <div className="bg-gray-50 rounded-xl p-4">
@@ -1118,7 +1297,7 @@ const IndividualAssets = () => {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2 font-poppins">
                           Region
                         </label>
                         <div className="bg-gray-50 rounded-xl p-4">
@@ -1129,238 +1308,8 @@ const IndividualAssets = () => {
                       </div>
                     </div>
                   </div>
+                  <div></div>
                 </motion.div>
-              </div>
-
-              {/* Right Column - Metrics & Info */}
-              <div className="space-y-8">
-                {/* Next Payout */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-6"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-[#28aeec] to-sky-400 rounded-full flex items-center justify-center">
-                      <FiClock className="w-4 h-4 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 font-space-grotesk">
-                      Next Payout
-                    </h3>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-[#28aeec] mb-2">
-                      {asset?.nextPayout ? formatNextPayout(asset.nextPayout) : '30d 0h 0m 0s'}
-                    </div>
-                    <p className="text-sm text-gray-600">
-                      Until next distribution
-                    </p>
-                  </div>
-                </motion.div>
-
-                {/* Historical Yields */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-6"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-[#28aeec] to-sky-400 rounded-full flex items-center justify-center">
-                      <FiTrendingUp className="w-4 h-4 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 font-space-grotesk">
-                      Historical Yields
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Annual Yield
-                      </span>
-                      <span className="font-bold text-green-600">
-                        {asset.annualYield}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Last 12 Months
-                      </span>
-                      <span className="font-bold text-green-600">
-                        {(asset.annualYield - 1.2).toFixed(1)}%
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">
-                        Last 6 Months
-                      </span>
-                      <span className="font-bold text-green-600">
-                        {(asset.annualYield + 0.8).toFixed(1)}%
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Boring Index */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-6"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                      <div className="w-4 h-4 bg-white rounded-full"></div>
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 font-space-grotesk">
-                      Boring Index
-                    </h3>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-gray-900 mb-2">
-                      {asset?.boringIndex || 5}/10
-                    </div>
-                    <p className="text-sm text-gray-600">Lower = More Stable</p>
-                    <div className="mt-3">
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-gradient-to-r from-green-500 to-yellow-500 h-2 rounded-full transition-all duration-1000"
-                          style={{
-                            width: `${(asset.boringIndex / 10) * 100}%`,
-                          }}
-                        ></div>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Power Saved */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-white/80 backdrop-blur-xl rounded-3xl border border-white/40 shadow-xl p-6"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-emerald-400 rounded-full flex items-center justify-center">
-                      <FiZap className="w-4 h-4 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 font-space-grotesk">Environmental Impact</h3>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600 mb-1">
-                      {(asset?.powerSaved?.amount || 0).toLocaleString()}
-                    </div>
-                    <div className="text-sm text-gray-600 mb-2">{asset?.powerSaved?.unit || 'N/A'}</div>
-                    <p className="text-xs text-gray-500">Saved monthly</p>
-                  </div>
-                </motion.div>
-
-                {/* Smart Contract */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-6"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-400 rounded-full flex items-center justify-center">
-                      <FiShield className="w-4 h-4 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 font-space-grotesk">
-                      Smart Contract
-                    </h3>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-500 mb-1">
-                        Address
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <code className="text-xs bg-gray-100 px-2 py-1 rounded flex-1 overflow-hidden">
-                          {asset?.smartContractAddress ? 
-                            `${asset.smartContractAddress.slice(0, 10)}...${asset.smartContractAddress.slice(-8)}` : 
-                            'No contract address'
-                          }
-                        </code>
-                        {asset?.smartContractAddress && (
-                        <button
-                          onClick={() =>
-                            copyAddress(asset.smartContractAddress)
-                          }
-                          className="p-1 hover:bg-gray-100 rounded transition-colors"
-                        >
-                          <BsCopy className="w-3 h-3 text-gray-500" />
-                        </button>
-                        )}
-                      </div>
-                    </div>
-                    {copied && (
-                      <div className="text-xs text-green-600 flex items-center gap-1">
-                        <IoCheckmarkCircle className="w-3 h-3" />
-                        Copied to clipboard
-                      </div>
-                    )}
-                  </div>
-                </motion.div>
-
-                {/* Proof Document */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6 }}
-                  className="bg-black/5 backdrop-blur-sm backdrop-saturate-150 rounded-3xl border border-white/40 ring-1 ring-black/10 ring-inset p-6"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-400 rounded-full flex items-center justify-center">
-                      <FiFileText className="w-4 h-4 text-white" />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 font-space-grotesk">
-                      Documentation
-                    </h3>
-                  </div>
-
-                  {asset?.proof?.url ? (
-                  <a
-                      href={asset.proof.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full bg-gradient-to-r from-orange-500/10 to-red-400/10 hover:from-orange-500/20 hover:to-red-400/20 border border-orange-500/20 rounded-xl p-4 transition-all duration-300 group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <FiFileText className="w-5 h-5 text-orange-600 group-hover:scale-110 transition-transform" />
-                      <div className="flex-1">
-                          <div className="font-medium text-gray-900 text-sm">{asset.proof.fileName}</div>
-                        <div className="text-xs text-gray-500">Business Plan & Proof</div>
-                        </div>
-                      </div>
-                    </a>
-                  ) : (
-                    <div className="block w-full bg-gray-100 border border-gray-200 rounded-xl p-4">
-                      <div className="flex items-center gap-3">
-                        <FiFileText className="w-5 h-5 text-gray-400" />
-                        <div className="flex-1">
-                          <div className="font-medium text-gray-500 text-sm">No documentation available</div>
-                          <div className="text-xs text-gray-400">Documentation will be added soon</div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
