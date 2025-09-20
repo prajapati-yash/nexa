@@ -215,13 +215,40 @@ export const useBusinessActions = () => {
     }
   };
 
-  const submitBusiness = async (name: string, fundingGoal: string, equipmentList: string) => {
+  const submitBusiness = async (
+    name: string, 
+    fundingGoal: string, 
+    equipmentList: string,
+    image: string,
+    description: string,
+    whyThisWorks: string,
+    location: string,
+    region: string,
+    boringIndexNumber: number,
+    certificate: string,
+    yieldRange: string,
+    ownerContract: string
+  ) => {
     if (!connected || !signer) {
       throw new Error('Wallet not connected');
     }
     
     try {
-      const txHash = await contractService.submitBusiness(name, fundingGoal, equipmentList, signer);
+      const txHash = await contractService.submitBusiness(
+        name, 
+        fundingGoal, 
+        equipmentList,
+        image,
+        description,
+        whyThisWorks,
+        location,
+        region,
+        boringIndexNumber,
+        certificate,
+        yieldRange,
+        ownerContract,
+        signer
+      );
       return txHash;
     } catch (error) {
       console.error('Error submitting business:', error);

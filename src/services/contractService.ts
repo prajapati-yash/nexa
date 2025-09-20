@@ -5,19 +5,19 @@ import { ethers } from 'ethers';
 
 // Contract addresses (Arbitrum Sepolia)
 const CONTRACT_ADDRESSES = {
-  REGISTRY: "0x0496Af2971945e2e792cE8806358ceF955072932",
-  MINTER: "0x55859c4de27Ba8182E7Bc6e044785F400dF2C55e",
-  YIELD_DISTRIBUTOR: "0xe846Ed8FcAD203D30752f69d21f800A8027FB0ab",
-  USDC: "0x4010cBABa3C67872AC2aCE727c0Ef40d2249055C" // USDC token address
+  REGISTRY: "0x14ffC2e3E49b6B6101e8877141B379EC3a5D2668",
+  MINTER: "0x1889239D26E55fDD876296193a654A1E8Db6b4b9",
+  YIELD_DISTRIBUTOR: "0x9BbdA4Ac00b23E4f72714dDc9B1E17472F4B0AcF",
+  USDC: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d" // USDC token address
 };
 
 // Contract ABIs (simplified versions)
 const REGISTRY_ABI = [
-  "function getBusiness(uint256 id) external view returns (tuple(string name, uint256 fundingGoal, string equipmentList, address owner, bool funded, uint256 totalRaised))",
+  "function getBusiness(uint256 id) external view returns (tuple(string name, uint256 fundingGoal, string equipmentList, address owner, bool funded, uint256 totalRaised, string image, string description, string whyThisWorks, string location, string region, uint256 boringIndexNumber, string certificate, string yieldRange, string ownerContract))",
   "function businessCounter() external view returns (uint256)",
   "function getInvestorContribution(uint256 id, address investor) external view returns (uint256)",
   "function investInBusiness(uint256 id, uint256 amount) external",
-  "function submitBusiness(string calldata name, uint256 goal, string calldata equipmentList) external"
+  "function submitBusiness(tuple(string name, uint256 fundingGoal, string equipmentList, string image, string description, string whyThisWorks, string location, string region, uint256 boringIndexNumber, string certificate, string yieldRange, string ownerContract) data) external"
 ];
 
 const MINTER_ABI = [
@@ -52,6 +52,15 @@ export interface Business {
   owner: string;
   funded: boolean;
   totalRaised: string; // in USDC
+  image: string; // Lighthouse image URL/IPFS hash
+  description: string; // Business description
+  whyThisWorks: string; // Why this business works explanation
+  location: string; // Physical location
+  region: string; // Geographic region
+  boringIndexNumber: number; // Boring index number (1-10)
+  certificate: string; // Lighthouse certificate URL/IPFS hash
+  yieldRange: string; // Expected yield range (e.g., "8-12%")
+  ownerContract: string; // Owner contract address or reference
   tokenAddress?: string;
   tokenSupply?: string;
   rewardPerToken?: string;
@@ -150,6 +159,15 @@ export class ContractService {
         owner: businessData.owner,
         funded: businessData.funded,
         totalRaised: ethers.formatUnits(businessData.totalRaised, 6),
+        image: businessData.image,
+        description: businessData.description,
+        whyThisWorks: businessData.whyThisWorks,
+        location: businessData.location,
+        region: businessData.region,
+        boringIndexNumber: Number(businessData.boringIndexNumber),
+        certificate: businessData.certificate,
+        yieldRange: businessData.yieldRange,
+        ownerContract: businessData.ownerContract,
         tokenAddress,
         tokenSupply,
         rewardPerToken,
@@ -182,14 +200,40 @@ export class ContractService {
   }
 
   // Submit a new business (requires wallet connection)
-  async submitBusiness(name: string, fundingGoal: string, equipmentList: string, signer: ethers.Signer): Promise<string> {
+  async submitBusiness(
+    name: string, 
+    fundingGoal: string, 
+    equipmentList: string,
+    image: string,
+    description: string,
+    whyThisWorks: string,
+    location: string,
+    region: string,
+    boringIndexNumber: number,
+    certificate: string,
+    yieldRange: string,
+    ownerContract: string,
+    signer: ethers.Signer
+  ): Promise<string> {
     try {
       const registryWithSigner = new ethers.Contract(CONTRACT_ADDRESSES.REGISTRY, REGISTRY_ABI, signer);
-      const tx = await registryWithSigner.submitBusiness(
+      
+      const businessData = {
         name,
-        ethers.parseUnits(fundingGoal, 6), // Parse as USDC (6 decimals)
-        equipmentList
-      );
+        fundingGoal: ethers.parseUnits(fundingGoal, 6), // Parse as USDC (6 decimals)
+        equipmentList,
+        image,
+        description,
+        whyThisWorks,
+        location,
+        region,
+        boringIndexNumber,
+        certificate,
+        yieldRange,
+        ownerContract
+      };
+      
+      const tx = await registryWithSigner.submitBusiness(businessData);
       await tx.wait();
       return tx.hash;
     } catch (error) {
@@ -455,17 +499,18 @@ export const contractService = new ContractService();
 export const formatBusinessForUI = (business: Business) => {
   return {
     id: `business-${business.id}`,
-    image: "/api/placeholder/400/300", // You can add business images later
-    mainImage: "/api/placeholder/800/600",
-    title: business.name,
-    description: business.equipmentList || "Real-world asset investment opportunity",
+    image: business.image || "/api/placeholder/400/300",
+    mainImage: business.image || "/api/placeholder/800/600",
+    title: business.name, // Use name as title
+    description: business.description || business.equipmentList || "Real-world asset investment opportunity",
     annualYield: business.annualYield || 0,
-    boringIndex: 5, // Default boring index
-    location: "Decentralized", // You can add location data later
+    boringIndex: business.boringIndexNumber || 5,
+    location: business.location || "Decentralized",
+    region: business.region || "Global",
     usdcValue: Number(business.fundingGoal), // USDC value (already in USDC)
     nextPayout: { days: 30, hours: 0, minutes: 0, seconds: 0 }, // Default payout
     powerSaved: { amount: 0, unit: "N/A" },
-    whyThisWorks: [
+    whyThisWorks: business.whyThisWorks ? business.whyThisWorks.split('\n').filter(line => line.trim()) : [
       "Decentralized investment platform",
       "Transparent smart contract execution",
       "Proportional token distribution",
@@ -474,12 +519,13 @@ export const formatBusinessForUI = (business: Business) => {
     locationOnMap: {
       lat: 0,
       lng: 0,
-      address: "Blockchain"
+      address: business.location || "Blockchain"
     },
     smartContractAddress: business.tokenAddress || "",
+    ownerContract: business.ownerContract || "",
     proof: {
-      fileName: `${business.name}_Contract.pdf`,
-      url: `https://sepolia.arbiscan.io/address/${business.tokenAddress}`
+      fileName: business.certificate ? `${business.name}_Certificate.pdf` : `${business.name}_Contract.pdf`,
+      url: business.certificate || `https://sepolia.arbiscan.io/address/${business.tokenAddress}`
     },
     category: "RWA Investment",
     fundingProgress: business.fundingProgress,
@@ -487,6 +533,7 @@ export const formatBusinessForUI = (business: Business) => {
     totalRequired: Number(business.fundingGoal),
     investorsCount: business.investorsCount || 0,
     status: business.status,
-    funded: business.funded
+    funded: business.funded,
+    yieldRange: business.yieldRange || "8-12%"
   };
 };

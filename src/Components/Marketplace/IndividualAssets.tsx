@@ -47,26 +47,53 @@ const IndividualAssets = () => {
   const [tokensMinted, setTokensMinted] = useState(false);
   const [scrollY, setScrollY] = useState(0);
 
+  // Debug logging
+  console.log('IndividualAssets render:', {
+    paramsTitle: params.title,
+    blockchainLoading,
+    blockchainAssetsLength: blockchainAssets.length,
+    assetsDataLength: assetsData.length,
+    asset: asset?.title || 'null'
+  });
+
   useEffect(() => {
+    console.log('IndividualAssets useEffect triggered:', {
+      paramsTitle: params.title,
+      blockchainLoading,
+      blockchainAssetsLength: blockchainAssets.length,
+      assetsDataLength: assetsData.length
+    });
+
     if (params.title) {
       // Convert URL-encoded title back to readable format and find matching asset
       const decodedTitle = decodeURIComponent(params.title as string);
+      console.log('Decoded title:', decodedTitle);
       
       // First try to find in static assets data
       let foundAsset = assetsData.find(a => {
         const urlTitle = a.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        return urlTitle === decodedTitle.toLowerCase() || a.id === decodedTitle;
+        const matches = urlTitle === decodedTitle.toLowerCase() || a.id === decodedTitle;
+        console.log('Checking static asset:', { title: a.title, urlTitle, decodedTitle, matches });
+        return matches;
       });
+      
+      console.log('Found in static assets:', foundAsset);
       
       // If not found in static data, try blockchain data
       if (!foundAsset && !blockchainLoading) {
         foundAsset = blockchainAssets.find(a => {
           const urlTitle = a.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-          return urlTitle === decodedTitle.toLowerCase() || a.id === decodedTitle;
+          const matches = urlTitle === decodedTitle.toLowerCase() || a.id === decodedTitle;
+          console.log('Checking blockchain asset:', { title: a.title, urlTitle, decodedTitle, matches });
+          return matches;
         });
+        console.log('Found in blockchain assets:', foundAsset);
       }
       
+      console.log('Final found asset:', foundAsset);
       setAsset(foundAsset || null);
+    } else {
+      console.log('No params.title found');
     }
   }, [params.title, blockchainAssets, blockchainLoading]);
 
@@ -558,6 +585,16 @@ const IndividualAssets = () => {
 
   // Show loading if blockchain data is still loading
   if (blockchainLoading) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#28aeec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-poppins">Loading blockchain data...</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleBackClick = () => {
     router.push("/marketplace");
   };
@@ -595,17 +632,6 @@ const IndividualAssets = () => {
 
 
 
-  if (!asset) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#28aeec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-poppins">Loading blockchain data...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Show not found if asset is not found in either static or blockchain data
   if (!asset) {
     return (
@@ -623,6 +649,12 @@ const IndividualAssets = () => {
             <p>• Static assets: {assetsData.length}</p>
             <p>• Blockchain assets: {blockchainAssets.length}</p>
           </div>
+          <button
+            onClick={handleBackClick}
+            className="mt-4 bg-[#28aeec] text-white px-6 py-2 rounded-lg hover:bg-[#28aeec]/90 transition-colors"
+          >
+            Back to Marketplace
+          </button>
         </div>
       </div>
     );
@@ -1335,6 +1367,5 @@ const IndividualAssets = () => {
     </div>
   );
 };
-}
 
 export default IndividualAssets;
