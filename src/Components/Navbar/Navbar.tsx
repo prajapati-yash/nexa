@@ -88,10 +88,10 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-10 h-10 bg-gradient-to-r from-[#28aeec] to-sky-400 rounded-lg flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
+              {/* <div className="w-10 h-10 bg-gradient-to-r from-[#28aeec] to-sky-400 rounded-lg flex items-center justify-center transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
                 <span className="text-white font-bold text-xl">N</span>
-              </div>
-              <span className="text-white font-bold text-xl font-space-grotesk">
+              </div> */}
+              <span className="bg-gradient-to-r from-white via-sky-200 to-sky-400 bg-clip-text text-transparent text-4xl font-bungee">
                 Nexa
               </span>
             </Link>

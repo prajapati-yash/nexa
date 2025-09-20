@@ -16,6 +16,22 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "nftstorage.link", // optional extra gateway
       },
+      {
+        protocol: "https",
+        hostname: "*.ipfs.dweb.link", // IPFS dweb gateway
+      },
+      {
+        protocol: "https",
+        hostname: "dweb.link", // IPFS dweb gateway base
+      },
+      {
+        protocol: "https",
+        hostname: "*.ipfs.cf-ipfs.com", // Cloudflare IPFS gateway
+      },
+      {
+        protocol: "https",
+        hostname: "cloudflare-ipfs.com", // Cloudflare IPFS gateway base
+      },
     ],
   },
 };

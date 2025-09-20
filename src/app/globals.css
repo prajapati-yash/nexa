@@ -11,6 +11,7 @@
   --font-space-grotesk: var(--font-space-grotesk);
   --font-poppins: var(--font-poppins);
   --font-quicksand: var(--font-quicksand);
+  --font-bungee: var(--font-bungee);
 
   /* Shimmer animation */
   --animate-shimmer: shimmer 2s infinite linear;

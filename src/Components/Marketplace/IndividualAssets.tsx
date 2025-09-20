@@ -10,6 +10,7 @@ import { contractService } from '@/services/contractService';
 import { ethers } from 'ethers';
 import { useParams, useRouter } from "next/navigation";
 import toast, { Toaster } from 'react-hot-toast';
+import IndividualAssetSkeleton from './IndividualAssetSkeleton';
 import {
   FiZap,
   FiMapPin,
@@ -611,14 +612,7 @@ const IndividualAssets = () => {
 
   // Show loading if blockchain data is still loading
   if (blockchainLoading) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#28aeec] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-poppins">Loading blockchain data...</p>
-        </div>
-      </div>
-    );
+    return <IndividualAssetSkeleton />;
   }
 
   const handleBackClick = () => {
@@ -697,7 +691,7 @@ const IndividualAssets = () => {
         {/* Hero Section with Main Image and Title/Description Overlay */}
         <div className="relative h-[70vh] min-h-[550px] overflow-hidden">
           <Image
-            src={businessImage || asset?.mainImage || asset?.image || ''}
+            src={ asset?.mainImage || asset?.image || ''}
             alt={asset?.title  || 'Asset Image'}
             fill
             className="object-cover"

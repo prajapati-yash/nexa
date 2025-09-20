@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins, Space_Grotesk, Quicksand  } from "next/font/google";
+import { Poppins, Space_Grotesk, Quicksand, Bungee  } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/Providers";
 import Navbar from "@/Components/Navbar/Navbar";
@@ -14,6 +14,13 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"], // adjust as needed
   variable: "--font-poppins",
 });
+
+const bungee = Bungee({
+  subsets: ["latin"],
+  weight: "400", // Bungee only has one weight
+  variable: "--font-bungee",
+});
+
 
 const quicksand = Quicksand({
   subsets: ["latin"],
@@ -34,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${spaceGrotesk.variable} ${poppins.variable} ${quicksand.variable} antialiased`}
+        className={`${spaceGrotesk.variable} ${poppins.variable} ${quicksand.variable} ${bungee.variable} antialiased`}
       >
         <Providers>
           <Navbar />

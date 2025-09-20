@@ -3,6 +3,24 @@ import { ethers } from 'ethers';
 import { contractService, Business } from '@/services/contractService';
 import { useAccount, useWalletClient } from 'wagmi';
 import { Asset } from '@/Utils/AssetsData';
+import car from "@/app/assets/car1.png"
+import evcharge from "@/app/assets/EvCharge.jpg"
+import laundromate from "@/app/assets/laundromat.jpg"
+import { StaticImageData } from 'next/image';
+
+// Function to get image by business ID
+const getBusinessImage = (businessId: number): string | StaticImageData => {
+  switch (businessId) {
+    case 0:
+      return car; // Car image for ID 0
+    case 1:
+      return evcharge; // EV Charge image for ID 1
+    case 2:
+      return laundromate; // Laundromat image for ID 2
+    default:
+      return car; // Default to car image
+  }
+};
 
 // Custom hook for managing contract data
 export const useContractData = () => {
@@ -21,10 +39,12 @@ export const useContractData = () => {
       setBusinesses(contractBusinesses);
       
       // Convert businesses to assets format for UI
-      const formattedAssets = contractBusinesses.map(business => ({
+      const formattedAssets = contractBusinesses.map(business => {
+        const businessImage = getBusinessImage(business.id);
+        return {
         id: `business-${business.id}`,
-        image: business.image || "/api/placeholder/400/300", // Use actual image from contract
-        mainImage: business.image || "/api/placeholder/800/600", // Use actual image from contract
+        image: businessImage, // Use ID-based image
+        mainImage: businessImage, // Use same ID-based image for mainImage
         title: business.name,
         description: business.description || business.equipmentList || "Real-world asset investment opportunity powered by blockchain",
         annualYield: business.annualYield || 0,
@@ -58,7 +78,8 @@ export const useContractData = () => {
         investorsCount: business.investorsCount || 0,
         status: business.status,
         yieldRange: business.yieldRange || "8-12%"
-      }));
+        };
+      });
       
       setAssets(formattedAssets);
     } catch (err) {
