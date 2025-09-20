@@ -2,10 +2,14 @@ import car from "@/app/assets/car1.png"
 import evcharge from "@/app/assets/EVcharge1.png"
 import washing from "@/app/assets/washing1.png"
 import { StaticImageData } from "next/image";
+import carMain from "@/app/assets/car.jpg"
+import evchargemain from "@/app/assets/EvCharge.jpg"
+import washingMain from "@/app/assets/laundromat.jpg"
 // Asset data type definition
 export interface Asset {
   id: string;
   image: string | StaticImageData;
+  mainImage: string | StaticImageData;
   title: string;
   description: string;
   annualYield: number; // percentage
@@ -46,6 +50,7 @@ export const assetsData: Asset[] = [
   {
     id: "asset-001",
     image: car,
+    mainImage: carMain,
     title: "Automated Car Wash Center - Houston",
     description: "High-tech automatic car wash with water recycling system, catering to urban car owners with subscription-based revenue model.",
     annualYield: 11.3,
@@ -81,6 +86,7 @@ export const assetsData: Asset[] = [
   {
     id: "asset-002",
     image: evcharge,
+    mainImage: evchargemain,
     title: "EV Charging Hub - San Francisco",
     description: "Fast-charging electric vehicle hub in downtown San Francisco with 20 ultra-fast chargers and green energy sourcing.",
     annualYield: 16.8,
@@ -116,6 +122,7 @@ export const assetsData: Asset[] = [
   {
     id: "asset-003",
     image: washing,
+    mainImage: washingMain,
     title: "Smart Laundromat - New York",
     description: "Automated laundromat chain with cashless payments, eco-friendly washing machines, and 24/7 customer access.",
     annualYield: 13.5,

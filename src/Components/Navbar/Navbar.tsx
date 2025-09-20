@@ -17,6 +17,7 @@ const Navbar = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const isHomePage = pathname === "/";
+  const ismarketPlace = pathname === "/marketplace"
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,20 +66,10 @@ const Navbar = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const scrollToHowItWorks = () => {
-    const element = document.getElementById("how-it-works");
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
-
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || !isHomePage ? "bg-black/20 backdrop-blur-md" : ""
+        isScrolled || ismarketPlace ? "bg-black/20 backdrop-blur-md" : ""
       }`}
     >
       <div className="mx-auto px-4 sm:px-6 lg:px-8">

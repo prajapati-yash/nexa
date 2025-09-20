@@ -1,14 +1,15 @@
 "use client";
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { assetsData, formatNextPayout, categories } from '@/Utils/AssetsData';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { assetsData, formatNextPayout, categories, Asset } from '@/Utils/AssetsData';
 import { FiTarget, FiMapPin, FiClock, FiZap } from 'react-icons/fi';
 import { BsLightning } from 'react-icons/bs';
 import { motion } from 'framer-motion';
 
 const Marketplace = () => {
-
-
+  const router = useRouter();
 
   const getStatusBadge = (status: string) => {
     const badges = {
@@ -18,6 +19,12 @@ const Marketplace = () => {
       completed: { text: 'Completed', color: 'bg-gray-500' }
     };
     return badges[status as keyof typeof badges] || badges.active;
+  };
+
+  const handleAssetClick = (asset: Asset) => {
+    // Convert title to URL-friendly format
+    const urlTitle = asset.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    router.push(`/marketplace/${urlTitle}`);
   };
 
   return (
@@ -68,6 +75,7 @@ const Marketplace = () => {
               <div
                 key={asset.id}
                 className="group relative cursor-pointer"
+                onClick={() => handleAssetClick(asset)}
               >
                 {/* Card Container */}
                 <div className="relative bg-white/60 backdrop-blur-xl border border-white/40 rounded-3xl overflow-hidden hover:border-[#28aeec]/60 hover:shadow-2xl hover:shadow-[#28aeec]/25 transition-all duration-500 shadow-lg hover:bg-white/80 transform hover:-translate-y-2 hover:scale-[1.02] h-[340px]">
@@ -145,10 +153,14 @@ const Marketplace = () => {
                       </div>
 
                       {/* Action Button */}
-                      <button className="w-full bg-white/20 border-2 border-[#28aeec] hover:bg-[#28aeec]/20 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-[#28aeec]/40 font-poppins uppercase tracking-wide text-sm backdrop-blur-sm cursor-pointer">
-                        {asset.status === 'active' ? 'Back Business' :
-                         asset.status === 'upcoming' ? 'Join Waitlist' :
-                         asset.status === 'funded' ? 'Funded' : 'Learn More'}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAssetClick(asset);
+                        }}
+                        className="w-full bg-white/20 border-2 border-[#28aeec] hover:bg-[#28aeec]/20 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-[#28aeec]/40 font-poppins uppercase tracking-wide text-sm backdrop-blur-sm cursor-pointer"
+                      >
+                        View Details
                       </button>
                     </div>
                   </div>
