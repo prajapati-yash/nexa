@@ -1,13 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FiUsers, FiDollarSign, FiTruck, FiCreditCard } from "react-icons/fi";
+import { FiUsers, FiDollarSign, FiTruck, FiCreditCard, FiTrendingUp } from "react-icons/fi";
 import step1 from "@/app/assets/step1.jpg";
 import step2 from "@/app/assets/step2.jpg";
 import step3 from "@/app/assets/step3.jpg";
 import step4 from "@/app/assets/step4.jpg";
 import { LuWorkflow } from "react-icons/lu";
 import Image from "next/image";
+import { RiWalletLine } from "react-icons/ri";
+import { FaGem } from "react-icons/fa";
 
 const HowItWorks = () => {
   const [expandedStep, setExpandedStep] = useState(0);
@@ -33,35 +35,31 @@ const HowItWorks = () => {
   const steps = [
     {
       id: 1,
-      title: "Businesses Apply",
-      description:
-        "Local businesses submit applications for equipment funding, providing detailed business plans and equipment specifications.",
-      icon: FiUsers,
-      image: step1,
+      title: "Connect Wallet",
+      description: "Securely connect your Web3 wallet to the NEXA platform on the Arbitrum ecosystem.",
+      icon: RiWalletLine, // or FiCreditCard, MdOutlineAccountBalanceWallet
+      image:step1
     },
     {
       id: 2,
-      title: "Investors Fund",
-      description:
-        "Verified investors review opportunities and fund 100% of the equipment cost through fractional ownership investment.",
-      icon: FiDollarSign,
-      image: step2,
+      title: "Select Asset",
+      description: "Browse a curated list of tokenized real-world assets, such as laundromats and vending machines.",
+      icon: FaGem, // or FaRegEye, FiSearch
+      image:step2
     },
     {
       id: 3,
-      title: "Equipment Delivered",
-      description:
-        "Equipment is purchased and delivered directly to the business location, ensuring immediate operational capability.",
-      icon: FiTruck,
-      image: step3,
+      title: "Commit Funds",
+      description: "Invest your crypto assets by committing funds to your chosen business's smart contract.",
+      icon: FiDollarSign, // or FiSend, FaHandHoldingUsd
+      image:step3
     },
     {
       id: 4,
-      title: "Yields Paid Onchain",
-      description:
-        "Returns of 15-25% are automatically distributed to investors through secure blockchain transactions.",
-      icon: FiCreditCard,
-      image: step4,
+      title: "Receive Yields",
+      description: "Earn automated and transparent revenue shares directly in your wallet as the business generates income.",
+      icon: FiTrendingUp, // or RiCoinsLine, FaChartLine
+      image:step4
     },
   ];
 
