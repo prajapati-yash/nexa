@@ -4,12 +4,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { assetsData, formatNextPayout, categories, Asset } from '@/Utils/AssetsData';
-import { FiTarget, FiMapPin, FiClock, FiZap } from 'react-icons/fi';
+import { FiTarget, FiMapPin, FiClock, FiZap, FiRefreshCw } from 'react-icons/fi';
 import { BsLightning } from 'react-icons/bs';
 import { motion } from 'framer-motion';
+import { useContractData, useWallet, useBusinessActions } from '@/hooks/useContractData';
 
 const Marketplace = () => {
   const router = useRouter();
+  const { assets, loading, error, refreshData } = useContractData();
+  const { connected, connectWallet } = useWallet();
+  const { investInBusiness } = useBusinessActions();
+  const [showStaticData, setShowStaticData] = useState(false);
 
   const getStatusBadge = (status: string) => {
     const badges = {
@@ -26,6 +31,34 @@ const Marketplace = () => {
     const urlTitle = asset.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     router.push(`/marketplace/${urlTitle}`);
   };
+
+  const handleInvestClick = async (asset: Asset, e: React.MouseEvent) => {
+    e.stopPropagation();
+    
+    if (!connected) {
+      try {
+        await connectWallet();
+      } catch (error) {
+        console.error('Failed to connect wallet:', error);
+        return;
+      }
+    }
+
+    // Extract business ID from asset ID
+    const businessId = parseInt(asset.id.replace('business-', ''));
+    
+    try {
+      const txHash = await investInBusiness(businessId, '0.001'); // 0.001 ETH investment
+      console.log('Investment successful:', txHash);
+      // Refresh data after successful investment
+      refreshData();
+    } catch (error) {
+      console.error('Investment failed:', error);
+    }
+  };
+
+  // Combine contract data with static data if needed
+  const displayAssets = showStaticData ? [...assets, ...assetsData] : assets;
 
   return (
     <section className="min-h-screen bg-white py-28 relative overflow-hidden">
@@ -53,6 +86,13 @@ const Marketplace = () => {
             <span className="uppercase text-3xl tracking-wider text-[#28aeec] font-semibold font-space-grotesk">
             Investment Marketplace
             </span>
+            <button
+              onClick={refreshData}
+              className="ml-auto p-2 rounded-full bg-[#28aeec]/10 hover:bg-[#28aeec]/20 transition-colors"
+              title="Refresh data from blockchain"
+            >
+              <FiRefreshCw className={`w-5 h-5 text-[#28aeec] ${loading ? 'animate-spin' : ''}`} />
+            </button>
           </div>
 
           {/* Divider */}
@@ -63,13 +103,62 @@ const Marketplace = () => {
           Invest Smart. <br />
           <span className="text-[#28aeec]">Build Tomorrow.</span>
           </h2>
+
+          {/* Data Source Toggle */}
+          <div className="mt-6 flex items-center gap-4">
+            <button
+              onClick={() => setShowStaticData(false)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                !showStaticData 
+                  ? 'bg-[#28aeec] text-white' 
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              }`}
+            >
+              Blockchain Data ({assets.length})
+            </button>
+            <button
+              onClick={() => setShowStaticData(true)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                showStaticData 
+                  ? 'bg-[#28aeec] text-white' 
+                  : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+              }`}
+            >
+              Demo Data ({assetsData.length})
+            </button>
+          </div>
+
+          {/* Error State */}
+          {error && (
+            <div className="mt-4 p-4 bg-red-100 border border-red-300 rounded-lg">
+              <p className="text-red-700">{error}</p>
+              <button
+                onClick={refreshData}
+                className="mt-2 text-red-600 hover:text-red-800 underline"
+              >
+                Try again
+              </button>
+            </div>
+          )}
         </motion.div>
 
         
 
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-20">
+            <div className="text-[#28aeec] mb-4">
+              <FiRefreshCw className="w-16 h-16 mx-auto animate-spin" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-600 mb-2">Loading from blockchain...</h3>
+            <p className="text-gray-500">Fetching real-time investment opportunities</p>
+          </div>
+        )}
+
         {/* Assets Grid - Two Column with Hover Reveal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {assetsData.map((asset, index) => {
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {displayAssets.map((asset, index) => {
 
             return (
               <div
@@ -156,13 +245,23 @@ const Marketplace = () => {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleAssetClick(asset);
+                          if (asset.id.startsWith('business-')) {
+                            handleInvestClick(asset, e);
+                          } else {
+                            handleAssetClick(asset);
+                          }
                         }}
                         className="w-full bg-white/20 border-2 border-[#28aeec] hover:bg-[#28aeec]/20 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-[#28aeec]/40 font-poppins uppercase tracking-wide text-sm backdrop-blur-sm cursor-pointer"
                       >
-                        {asset.status === 'active' ? 'Back Business' :
-                         asset.status === 'upcoming' ? 'Join Waitlist' :
-                         asset.status === 'funded' ? 'Funded' : 'Learn More'}
+                        {asset.id.startsWith('business-') ? (
+                          asset.status === 'active' ? 'Invest Now' :
+                          asset.status === 'funded' ? 'View Tokens' :
+                          asset.status === 'upcoming' ? 'Join Waitlist' : 'Learn More'
+                        ) : (
+                          asset.status === 'active' ? 'Back Business' :
+                          asset.status === 'upcoming' ? 'Join Waitlist' :
+                          asset.status === 'funded' ? 'Funded' : 'Learn More'
+                        )}
                       </button>
                     </div>
                   </div>
@@ -189,15 +288,41 @@ const Marketplace = () => {
             );
           })}
         </div>
+        )}
 
         {/* Empty State */}
-        {assetsData.length === 0 && (
+        {!loading && displayAssets.length === 0 && (
           <div className="text-center py-20">
             <div className="text-gray-400 mb-4">
               <FiTarget className="w-16 h-16 mx-auto" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-600 mb-2">No assets found</h3>
-            <p className="text-gray-500">Try selecting a different category or check back later for new opportunities.</p>
+            <h3 className="text-2xl font-bold text-gray-600 mb-2">
+              {showStaticData ? 'No demo assets found' : 'No blockchain assets found'}
+            </h3>
+            <p className="text-gray-500 mb-6">
+              {showStaticData 
+                ? 'Demo data is not available.' 
+                : 'No businesses have been submitted to the blockchain yet. Be the first to submit a business!'
+              }
+            </p>
+            {!showStaticData && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">
+                  Contract Addresses on Arbitrum Sepolia:
+                </p>
+                <div className="text-xs text-gray-500 space-y-1">
+                  <p>Registry: 0x29bFC7c1509461CF7aC8822Fdcc77E126FE0cD96</p>
+                  <p>Minter: 0x0c461AB30b13096d26Fd794CEfFE6Ef0f936C42b</p>
+                  <p>YieldDistributor: 0x8cb8f87896e46069DACe1b9d962C7A301AC502a6</p>
+                </div>
+                <button
+                  onClick={() => setShowStaticData(true)}
+                  className="px-6 py-3 bg-[#28aeec] text-white rounded-lg hover:bg-[#28aeec]/80 transition-colors"
+                >
+                  View Demo Data Instead
+                </button>
+              </div>
+            )}
           </div>
         )}
        

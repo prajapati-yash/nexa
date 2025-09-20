@@ -16,6 +16,7 @@ export interface Asset {
   boringIndex: number; // 1-10 scale
   location: string;
   usdcValue: number;
+  funded?: boolean; // Optional funded status for blockchain assets
   nextPayout: {
     days: number;
     hours: number;
