@@ -97,66 +97,6 @@ const GetInTouchForm: React.FC<GetInTouchFormProps> = ({ isOpen, onClose }) => {
           scrollbar-width: thin;
           scrollbar-color: #28aeec rgba(255, 255, 255, 0.1);
         }
-
-        /* Custom Dropdown Styles */
-        .custom-select {
-          appearance: none;
-          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-          background-repeat: no-repeat;
-          background-position: right 12px center;
-          background-size: 16px;
-          padding-right: 40px;
-        }
-
-        .custom-select:focus {
-          background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2328aeec' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-        }
-
-        .custom-select option {
-          background: linear-gradient(135deg, rgba(40, 174, 236, 0.15), rgba(14, 165, 233, 0.1));
-          color: white;
-          border: none;
-          padding: 12px 16px;
-          border-radius: 8px;
-          margin: 2px 0;
-          backdrop-filter: blur(10px);
-        }
-
-        .custom-select option:hover {
-          background: linear-gradient(135deg, rgba(40, 174, 236, 0.3), rgba(14, 165, 233, 0.2));
-          color: #28aeec;
-        }
-
-        .custom-select option:checked {
-          background: linear-gradient(135deg, #28aeec, #0ea5e9);
-          color: white;
-          font-weight: 600;
-        }
-
-        /* Enhanced dropdown for better browser support */
-        .dropdown-wrapper {
-          position: relative;
-        }
-
-        .dropdown-wrapper::after {
-          content: '';
-          position: absolute;
-          right: 12px;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 0;
-          height: 0;
-          border-left: 6px solid transparent;
-          border-right: 6px solid transparent;
-          border-top: 8px solid rgba(255, 255, 255, 0.7);
-          pointer-events: none;
-          transition: all 0.3s ease;
-        }
-
-        .dropdown-wrapper:focus-within::after {
-          border-top-color: #28aeec;
-          transform: translateY(-50%) rotate(180deg);
-        }
       `;
       document.head.appendChild(style);
     } else {
@@ -179,18 +119,11 @@ const GetInTouchForm: React.FC<GetInTouchFormProps> = ({ isOpen, onClose }) => {
   }, [isOpen]);
 
   const businessTypes = [
-    "Technology",
-    "Healthcare",
-    "Finance",
-    "Real Estate",
-    "E-commerce",
-    "Manufacturing",
-    "Retail",
-    "Food & Beverage",
-    "Education",
-    "Energy",
-    "Agriculture",
-    "Transportation",
+    "Laundromats",
+    "ATM machines",
+    "Vending machines",
+    "Automated car washes",
+    "Franchise-based Businesses",
     "Other",
   ];
 
@@ -209,10 +142,6 @@ const GetInTouchForm: React.FC<GetInTouchFormProps> = ({ isOpen, onClose }) => {
     "Under $50K",
     "$50K - $100K",
     "$100K - $500K",
-    "$500K - $1M",
-    "$1M - $5M",
-    "$5M - $10M",
-    "Over $10M",
   ];
 
   const hearAboutOptions = [
@@ -294,9 +223,9 @@ const GetInTouchForm: React.FC<GetInTouchFormProps> = ({ isOpen, onClose }) => {
       if (field === "businessDescription") {
         if (!formData.businessDescription.trim()) {
           newErrors.businessDescription = "Business description is required";
-        } else if (formData.businessDescription.trim().length < 50) {
+        } else if (formData.businessDescription.trim().length < 10) {
           newErrors.businessDescription =
-            "Please provide at least 50 characters";
+            "Please provide at least 10 characters";
         }
       }
     });
@@ -323,11 +252,23 @@ const GetInTouchForm: React.FC<GetInTouchFormProps> = ({ isOpen, onClose }) => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const response = await fetch('/api/contact-form', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to submit form');
+      }
 
       // Handle successful submission
-      console.log("Form submitted:", formData);
+      console.log("Form submitted successfully:", result);
+      alert("Thank you! Your application has been submitted successfully.");
       onClose();
 
       // Reset form
@@ -346,6 +287,7 @@ const GetInTouchForm: React.FC<GetInTouchFormProps> = ({ isOpen, onClose }) => {
       setCurrentStep(0);
     } catch (error) {
       console.error("Submission error:", error);
+      alert("Failed to submit form. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -634,7 +576,7 @@ const GetInTouchForm: React.FC<GetInTouchFormProps> = ({ isOpen, onClose }) => {
             <div className="p-8 pb-6 relative">
               <button
                 onClick={onClose}
-                className="absolute top-6 right-6 p-2 hover:bg-white/10 rounded-full transition-colors duration-200"
+                className="absolute cursor-pointer top-6 right-6 p-2 hover:bg-white/10 rounded-full transition-colors duration-200"
               >
                 <FiX className="w-6 h-6 text-white" />
               </button>
