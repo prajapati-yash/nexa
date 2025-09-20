@@ -7,7 +7,7 @@ import { ethers } from 'ethers';
 const CONTRACT_ADDRESSES = {
   REGISTRY: "0x14ffC2e3E49b6B6101e8877141B379EC3a5D2668",
   MINTER: "0x1889239D26E55fDD876296193a654A1E8Db6b4b9",
-  YIELD_DISTRIBUTOR: "0x9BbdA4Ac00b23E4f72714dDc9B1E17472F4B0AcF",
+  YIELD_DISTRIBUTOR: "0x3BFbD96CFa56c87E9EF6F6D65AEBAFbe761ce1De", // Updated with receipt functionality (no token requirement)
   USDC: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d" // USDC token address
 };
 
@@ -30,7 +30,13 @@ const YIELD_DISTRIBUTOR_ABI = [
   "function rewardPerToken(uint256 businessId) external view returns (uint256)",
   "function getPendingYield(uint256 businessId, address holder) external view returns (uint256)",
   "function claimYield(uint256 businessId) external",
-  "function depositYield(uint256 businessId, uint256 amount) external"
+  "function depositYield(uint256 businessId, uint256 amount) external",
+  "function uploadReceiptAndDistributeYield(uint256 businessId, uint256 amount, string calldata receiptHash, string calldata description) external",
+  "function getBusinessReceipts(uint256 businessId) external view returns (tuple(uint256 businessId, uint256 amount, string receiptHash, string description, uint256 timestamp, address uploadedBy)[])",
+  "function getReceipt(uint256 businessId, uint256 receiptId) external view returns (tuple(uint256 businessId, uint256 amount, string receiptHash, string description, uint256 timestamp, address uploadedBy))",
+  "function getReceiptCount(uint256 businessId) external view returns (uint256)",
+  "function calculateDistribution(uint256 totalAmount) external pure returns (uint256 platformFee, uint256 ownerCut, uint256 tokenHolderAmount)",
+  "function getPlatformFeeStats() external view returns (uint256 totalFees, address collector)"
 ];
 
 const ERC20_ABI = [
@@ -80,8 +86,11 @@ export class ContractService {
   private usdcContract: ethers.Contract;
 
   constructor() {
-    // Initialize provider (you'll need to configure this for your environment)
-    this.provider = new ethers.JsonRpcProvider("https://arb-sepolia.g.alchemy.com/v2/8eRw5isnshGewNcmFkaOmKIp49nPHQal");
+    // Use multiple provider endpoints for better reliability
+    const alchemyUrl = "https://arb-sepolia.g.alchemy.com/v2/8eRw5isnshGewNcmFkaOmKIp49nPHQal";
+    const publicUrl = "https://sepolia-rollup.arbitrum.io/rpc";
+    
+    this.provider = new ethers.JsonRpcProvider(alchemyUrl);
     
     // Initialize contracts
     this.registryContract = new ethers.Contract(CONTRACT_ADDRESSES.REGISTRY, REGISTRY_ABI, this.provider);
@@ -340,6 +349,181 @@ export class ContractService {
       return tx.hash;
     } catch (error) {
       console.error('Error claiming yield:', error);
+      throw error;
+    }
+  }
+
+  // Upload receipt and distribute yield (requires wallet connection)
+  async uploadReceiptAndDistributeYield(
+    businessId: number, 
+    amount: string, 
+    receiptHash: string, 
+    description: string, 
+    signer: ethers.Signer
+  ): Promise<string> {
+    try {
+      const amountWei = ethers.parseUnits(amount, 6); // Convert to USDC decimals (6)
+      
+      // First approve USDC spending with robust error handling
+      console.log('Checking USDC allowance...');
+      const usdcContract = new ethers.Contract(CONTRACT_ADDRESSES.USDC, ERC20_ABI, signer);
+      const usdcWithSigner = usdcContract.connect(signer) as any;
+      
+      try {
+        // Check current allowance with retry mechanism
+        let allowance;
+        let retryCount = 0;
+        const maxRetries = 3;
+        
+        while (retryCount < maxRetries) {
+          try {
+            allowance = await usdcWithSigner.allowance(await signer.getAddress(), CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR);
+            console.log(`Current allowance: ${ethers.formatUnits(allowance, 6)} USDC`);
+            break; // Success, exit retry loop
+          } catch (retryError: any) {
+            retryCount++;
+            console.log(`Allowance check attempt ${retryCount} failed:`, retryError.message);
+            
+            if (retryCount >= maxRetries) {
+              // If all retries failed, try a different approach
+              console.log('All retry attempts failed. Trying alternative approach...');
+              
+              // Try to get allowance using a fresh contract instance
+              const freshUsdcContract = new ethers.Contract(CONTRACT_ADDRESSES.USDC, ERC20_ABI, signer);
+              allowance = await freshUsdcContract.allowance(await signer.getAddress(), CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR);
+              console.log(`Allowance via fresh contract: ${ethers.formatUnits(allowance, 6)} USDC`);
+              break;
+            }
+            
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+        
+        if (allowance < amountWei) {
+          console.log('Insufficient allowance. Requesting approval...');
+          
+          // Request approval for the exact amount needed
+          const approveTx = await usdcWithSigner.approve(CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR, amountWei);
+          console.log('Approval transaction sent:', approveTx.hash);
+          
+          // Wait for confirmation
+          await approveTx.wait();
+          console.log('USDC approval confirmed');
+          
+          // Verify the approval went through
+          const newAllowance = await usdcWithSigner.allowance(await signer.getAddress(), CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR);
+          console.log(`New allowance: ${ethers.formatUnits(newAllowance, 6)} USDC`);
+          
+          if (newAllowance < amountWei) {
+            throw new Error('Approval failed - insufficient allowance after approval');
+          }
+        } else {
+          console.log('Sufficient allowance already exists');
+        }
+      } catch (approvalError: any) {
+        console.error('Error in approval process:', approvalError);
+        if (approvalError.message.includes('missing revert data')) {
+          throw new Error('USDC contract call failed. Please check your wallet connection and try again.');
+        }
+        throw new Error(`Approval failed: ${approvalError.message}`);
+      }
+
+      console.log('Proceeding with receipt upload...');
+
+      const yieldDistributorWithSigner = new ethers.Contract(CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR, YIELD_DISTRIBUTOR_ABI, signer);
+      const tx = await yieldDistributorWithSigner.uploadReceiptAndDistributeYield(
+        businessId, 
+        amountWei,
+        receiptHash, 
+        description
+      );
+      
+      console.log('Receipt upload transaction sent:', tx.hash);
+      await tx.wait();
+      console.log('Receipt upload confirmed');
+      
+      return tx.hash;
+    } catch (error) {
+      console.error('Error uploading receipt and distributing yield:', error);
+      throw error;
+    }
+  }
+
+  // Get business receipts (view function)
+  async getBusinessReceipts(businessId: number): Promise<any[]> {
+    try {
+      const yieldDistributor = new ethers.Contract(CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR, YIELD_DISTRIBUTOR_ABI, this.provider);
+      const receipts = await yieldDistributor.getBusinessReceipts(businessId);
+      return receipts;
+    } catch (error) {
+      console.error('Error fetching business receipts:', error);
+      throw error;
+    }
+  }
+
+  // Get specific receipt (view function)
+  async getReceipt(businessId: number, receiptId: number): Promise<any> {
+    try {
+      const yieldDistributor = new ethers.Contract(CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR, YIELD_DISTRIBUTOR_ABI, this.provider);
+      const receipt = await yieldDistributor.getReceipt(businessId, receiptId);
+      return receipt;
+    } catch (error) {
+      console.error('Error fetching receipt:', error);
+      throw error;
+    }
+  }
+
+  // Get receipt count (view function)
+  async getReceiptCount(businessId: number): Promise<number> {
+    try {
+      const yieldDistributor = new ethers.Contract(CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR, YIELD_DISTRIBUTOR_ABI, this.provider);
+      const count = await yieldDistributor.getReceiptCount(businessId);
+      return Number(count);
+    } catch (error) {
+      console.error('Error fetching receipt count:', error);
+      throw error;
+    }
+  }
+
+  // Calculate distribution amounts (view function)
+  async calculateDistribution(totalAmount: string): Promise<{
+    platformFee: string;
+    ownerCut: string;
+    tokenHolderAmount: string;
+  }> {
+    try {
+      const yieldDistributor = new ethers.Contract(CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR, YIELD_DISTRIBUTOR_ABI, this.provider);
+      const [platformFee, ownerCut, tokenHolderAmount] = await yieldDistributor.calculateDistribution(
+        ethers.parseUnits(totalAmount, 6)
+      );
+      
+      return {
+        platformFee: ethers.formatUnits(platformFee, 6),
+        ownerCut: ethers.formatUnits(ownerCut, 6),
+        tokenHolderAmount: ethers.formatUnits(tokenHolderAmount, 6)
+      };
+    } catch (error) {
+      console.error('Error calculating distribution:', error);
+      throw error;
+    }
+  }
+
+  // Get platform fee statistics (view function)
+  async getPlatformFeeStats(): Promise<{
+    totalFees: string;
+    collector: string;
+  }> {
+    try {
+      const yieldDistributor = new ethers.Contract(CONTRACT_ADDRESSES.YIELD_DISTRIBUTOR, YIELD_DISTRIBUTOR_ABI, this.provider);
+      const [totalFees, collector] = await yieldDistributor.getPlatformFeeStats();
+      
+      return {
+        totalFees: ethers.formatUnits(totalFees, 6),
+        collector: collector
+      };
+    } catch (error) {
+      console.error('Error fetching platform fee stats:', error);
       throw error;
     }
   }
