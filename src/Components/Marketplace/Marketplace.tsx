@@ -160,14 +160,16 @@ const Marketplace = () => {
                         }}
                         className="w-full bg-white/20 border-2 border-[#28aeec] hover:bg-[#28aeec]/20 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-[#28aeec]/40 font-poppins uppercase tracking-wide text-sm backdrop-blur-sm cursor-pointer"
                       >
-                        View Details
+                        {asset.status === 'active' ? 'Back Business' :
+                         asset.status === 'upcoming' ? 'Join Waitlist' :
+                         asset.status === 'funded' ? 'Funded' : 'Learn More'}
                       </button>
                     </div>
                   </div>
 
                   {/* Corner Badge - Status */}
                   <div className="absolute top-4 right-4 z-10">
-                    <div className={`${getStatusBadge(asset.status).color} text-white px-3 py-1 rounded-full text-xs font-bold`}>
+                    <div className={`${getStatusBadge(asset.status).color} text-white px-3 py-1 rounded-full text-xs font-space-grotesk uppercase font-bold`}>
                       {getStatusBadge(asset.status).text}
                     </div>
                   </div>
