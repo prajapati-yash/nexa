@@ -64,7 +64,10 @@ const IndividualAssets = () => {
     blockchainAssetsLength: blockchainAssets.length,
     assetsDataLength: assetsData.length,
     asset: asset?.title || 'null',
-    businessId
+    assetId: asset?.id,
+    businessId,
+    isBusinessAsset: asset?.id.startsWith('business-'),
+    extractedId: asset?.id ? asset.id.replace('business-', '') : 'no asset id'
   });
 
   useEffect(() => {
@@ -308,10 +311,22 @@ const IndividualAssets = () => {
         throw new Error('No wallet available');
       }
 
-      if (!businessId) {
-        throw new Error('Invalid business ID');
+      console.log('Business ID validation:', {
+        asset: asset,
+        assetId: asset?.id,
+        businessId,
+        businessIdType: typeof businessId,
+        isValid: businessId !== null && !isNaN(businessId) && businessId >= 0
+      });
+
+      if (!businessId && businessId !== 0) {
+        throw new Error(`Invalid business ID. Asset ID: ${asset?.id}, Extracted businessId: ${businessId}`);
       }
-      
+
+      if (isNaN(businessId)) {
+        throw new Error(`Business ID is not a number. Asset ID: ${asset?.id}, Extracted businessId: ${businessId}`);
+      }
+
       // Additional validation: check if business exists
       try {
         const businessExists = await contractService.getBusinessById(businessId);
@@ -491,6 +506,15 @@ const IndividualAssets = () => {
       
       // Call the smart contract directly with the refreshed signer
       console.log('Using signer for transaction:', signer.address);
+      console.log('Investment parameters:', {
+        businessId,
+        usdcAmount,
+        totalValue,
+        tokenQuantity,
+        signerAddress: signer.address,
+        networkChainId: network.chainId
+      });
+
       const txHash = await contractService.investInBusiness(businessId, usdcAmount, signer);
       
       setInvestmentStatus(`Investment successful! Transaction: ${txHash.slice(0, 10)}...`);
@@ -572,7 +596,14 @@ const IndividualAssets = () => {
       
     } catch (error: any) {
       console.error('Investment error:', error);
-      
+      console.error('Error details:', {
+        message: error.message,
+        code: error.code,
+        reason: error.reason,
+        data: error.data,
+        stack: error.stack
+      });
+
       // Handle specific error messages
       let errorMessage = error.message;
       if (error.message.includes('Business already funded')) {

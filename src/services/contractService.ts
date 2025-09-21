@@ -8,7 +8,7 @@ const CONTRACT_ADDRESSES = {
   REGISTRY: "0xc2baBc4fcd0F81a7E09a53534382cD3ee292F2fF",
   MINTER: "0x80C51589E52BC426a383839AAcAC5A62E50b4D8c",
   YIELD_DISTRIBUTOR: "0x3BFbD96CFa56c87E9EF6F6D65AEBAFbe761ce1De", // Updated with receipt functionality (no token requirement)
-  USDC: "0x75faf114eafb1BDbe2F0316DF893fd58CE46AA4d" // USDC token address
+  USDC: "0xeae58baa43A455B6E40a7F69aBE022fD283e2485" // USDC token address
 };
 
 // Contract ABIs (simplified versions)
