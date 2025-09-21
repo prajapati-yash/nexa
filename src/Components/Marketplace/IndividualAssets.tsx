@@ -58,17 +58,17 @@ const IndividualAssets = () => {
   : null;
 
   // Debug logging
-  console.log('IndividualAssets render:', {
-    paramsTitle: params.title,
-    blockchainLoading,
-    blockchainAssetsLength: blockchainAssets.length,
-    assetsDataLength: assetsData.length,
-    asset: asset?.title || 'null',
-    assetId: asset?.id,
-    businessId,
-    isBusinessAsset: asset?.id.startsWith('business-'),
-    extractedId: asset?.id ? asset.id.replace('business-', '') : 'no asset id'
-  });
+  // console.log('IndividualAssets render:', {
+  //   paramsTitle: params.title,
+  //   blockchainLoading,
+  //   blockchainAssetsLength: blockchainAssets.length,
+  //   assetsDataLength: assetsData.length,
+  //   asset: asset?.title || 'null',
+  //   assetId: asset?.id,
+  //   businessId,
+  //   isBusinessAsset: asset?.id.startsWith('business-'),
+  //   extractedId: asset?.id ? asset.id.replace('business-', '') : 'no asset id'
+  // });
 
   useEffect(() => {
     console.log('IndividualAssets useEffect triggered:', {
@@ -311,21 +311,21 @@ const IndividualAssets = () => {
         throw new Error('No wallet available');
       }
 
-      console.log('Business ID validation:', {
-        asset: asset,
-        assetId: asset?.id,
-        businessId,
-        businessIdType: typeof businessId,
-        isValid: businessId !== null && !isNaN(businessId) && businessId >= 0
-      });
+      // console.log('Business ID validation:', {
+      //   asset: asset,
+      //   assetId: asset?.id,
+      //   businessId,
+      //   businessIdType: typeof businessId,
+      //   isValid: businessId !== null && !isNaN(businessId) && businessId >= 0
+      // });
 
-      if (!businessId && businessId !== 0) {
-        throw new Error(`Invalid business ID. Asset ID: ${asset?.id}, Extracted businessId: ${businessId}`);
+      if (!businessId ) {
+        throw new Error(`Invalid business ID.`);
       }
 
-      if (isNaN(businessId)) {
-        throw new Error(`Business ID is not a number. Asset ID: ${asset?.id}, Extracted businessId: ${businessId}`);
-      }
+      // if (isNaN(businessId)) {
+      //   throw new Error(`Business ID is not a number. Asset ID: ${asset?.id}, Extracted businessId: ${businessId}`);
+      // }
 
       // Additional validation: check if business exists
       try {
@@ -505,15 +505,15 @@ const IndividualAssets = () => {
       }
       
       // Call the smart contract directly with the refreshed signer
-      console.log('Using signer for transaction:', signer.address);
-      console.log('Investment parameters:', {
-        businessId,
-        usdcAmount,
-        totalValue,
-        tokenQuantity,
-        signerAddress: signer.address,
-        networkChainId: network.chainId
-      });
+      // console.log('Using signer for transaction:', signer.address);
+      // console.log('Investment parameters:', {
+      //   businessId,
+      //   usdcAmount,
+      //   totalValue,
+      //   tokenQuantity,
+      //   signerAddress: signer.address,
+      //   networkChainId: network.chainId
+      // });
 
       const txHash = await contractService.investInBusiness(businessId, usdcAmount, signer);
       
